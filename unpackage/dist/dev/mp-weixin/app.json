@@ -30,11 +30,18 @@
       }
     ]
   },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "需要获取您的地理位置，请确认授权"
+    },
+    "scope.userLocationBackground": {
+      "desc": "需要在后台上传配送位置，请确认授权"
+    }
+  },
   "usingComponents": {
     "basics": "/pages/basics/home",
     "components": "/pages/component/home",
     "plugin": "/pages/plugin/home",
     "cu-custom": "/colorui/components/cu-custom"
-  },
-  "sitemapLocation": "sitemap.json"
+  }
 }

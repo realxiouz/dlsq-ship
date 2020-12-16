@@ -62,7 +62,15 @@
         "setting" : {
             "urlCheck" : false,
             "es6" : true
-        }
+        },
+        "permission" : {
+			"scope.userLocation" : {
+                "desc" : "需要获取您的地理位置，请确认授权"
+            },
+            "scope.userLocationBackground": {
+                "desc" : "需要在后台上传配送位置，请确认授权"
+            }
+		}
     },
     "h5" : {
         "title" : "ColorUi for UniApp",

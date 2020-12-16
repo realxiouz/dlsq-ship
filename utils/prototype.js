@@ -1,20 +1,20 @@
 import Vue from 'vue'
-// import { http } from '@/common/js/request'
+import { http } from './request'
 // import store from '@/store/index.js'
 
 
 // Vue.prototype.$http = http
 // Vue.prototype.$store = store
 
-// Vue.prototype.$get = (url, data, showErrToast = true) =>
-//   http(url, data, 'get', showErrToast)
-// Vue.prototype.$post = (url, data, showErrToast = true) =>
-//   http(url, data, 'post', showErrToast)
-// Vue.prototype.$put = (url, data, showErrToast = true) =>
-//   http(url, data, 'put', showErrToast)
+Vue.prototype.$get = (url, data, showErrToast = true) =>
+  http(url, data, 'get', showErrToast)
+Vue.prototype.$post = (url, data, showErrToast = true) =>
+  http(url, data, 'post', showErrToast)
+Vue.prototype.$put = (url, data, showErrToast = true) =>
+  http(url, data, 'put', showErrToast)
 
-// Vue.prototype.$del = (url, data, showErrToast = true) =>
-//   http(url, data, 'delete', showErrToast)
+Vue.prototype.$del = (url, data, showErrToast = true) =>
+  http(url, data, 'delete', showErrToast)
 
 Vue.prototype.$toast = (title = '', icon = 'none') =>
   uni.showToast({

@@ -10,23 +10,27 @@
 		
 		<div class="main-content" :style="{height: `calc(100vh - ${h}px)`}">
 			<map
-				v-if="curTab==0"
+				v-show="curTab==0"
 				style="width:100%;height:100%;"
+				:markers="markers"
+				:polyline="polyline"
+				:latitude="latitude"
+				:longitude="longitude"
 			></map>
 		</div>
 
 		<cover-view v-if="curTab==0" class="action flex" :class="{show:showAction}" >
 			<cover-view class="flex-sub flex flex-direction align-center justify-center" @click="onAction(0)">
-				<cover-image src="/static/tabbar/about_cur.png" style="width:48rpx;height:48rpx;" />
+				<cover-image src="/static/img/a0.png" style="width:48rpx;height:48rpx;margin-bottom:6rpx;" />
 				<cover-view>完成配送</cover-view>
 			</cover-view>
 			<cover-view class="flex-sub flex flex-direction align-center justify-center" @click="onAction(1)">
-				<cover-image src="/static/tabbar/about_cur.png" style="width:48rpx;height:48rpx;" />
-				<cover-view>完成配送</cover-view>
+				<cover-image src="/static/img/a1.png" style="width:48rpx;height:48rpx;margin-bottom:6rpx;" />
+				<cover-view>联系对方</cover-view>
 			</cover-view>
 			<cover-view class="flex-sub flex flex-direction align-center justify-center" @click="onAction(2)">
-				<cover-image src="/static/tabbar/about_cur.png" style="width:48rpx;height:48rpx;" />
-				<cover-view>完成配送</cover-view>
+				<cover-image src="/static/img/a2.png" style="width:48rpx;height:48rpx;margin-bottom:6rpx;" />
+				<cover-view>订单信息</cover-view>
 			</cover-view>
 			<cover-view style="width:100rpx;" @click.stop="showAction=!showAction"></cover-view>
 		</cover-view>
@@ -34,28 +38,68 @@
 </template>
 
 <script>
+import dayjs from 'dayjs'
 let h = uni.upx2px(125)
-const INTERVER = 10
+const INTERVER = 3
 const TABS = [
 	{
-		img: '',
+		img: '/static/img/nav0.png',
 		title: '正在配送',
 	},
 	{
-		img: '',
+		img: '/static/img/nav1.png',
 		title: '实时订单',
 	},
 	{
-		img: '',
+		img: '/static/img/nav2.png',
 		title: '预约订单',
 	},
 ]
 export default {
 	onLoad() {
+		wx.startLocationUpdateBackground({
+			success: _ => {
+				this.$toast('开始持续定位')
+				console.log('---loc start---')
+			},
+			fail: e => {
+				console.log(e)
+			}
+		})
 		this.upLoadLocation()
+		wx.onLocationChange(this.locChange)
 	},
 	data() {
 		return {
+			markers: [
+				{
+					latitude: 40.013305,
+					longitude: 118.685713,
+					iconPath: '/static/img/loc0.png',
+					width: 40,
+					height:40
+				}
+			],
+			polyline: [
+				{
+					points: [
+						{
+							latitude: 40.013305,
+							longitude: 118.685713,
+						},
+						{
+							latitude: 40.013305,
+							longitude: 118.68572,
+						},
+						{
+							latitude: 40.013305,
+							longitude: 118.68571,
+						}
+					],
+					color: '#496BA0',
+					width: 2
+				}
+			],
 			agentId:0,
 			title: 'map', //地图标题
 			latitude: 40.013305,  //纬度
@@ -76,14 +120,18 @@ export default {
 		upLoadLocation() {
 			if (!this.timer) {
 				this.timer = setInterval(_ => {
-					uni.getLocation({
-						success: ({longitude, latitude}) => {
-							this.$toast(longitude)
-						},
-						fail: e => {
-							this.$toast(e)
-						}
-					})
+					let d = {
+						lat: this.latitude,
+						lng: this.longitude,
+						store_id: 1,
+					}
+					this.$post('store/store/location', d)
+						.then(r => {
+							console.log(r)
+						})
+						.catch(e => {
+							console.log(e)
+						})
 				}, 1000 * INTERVER)
 			}
 		},
@@ -93,10 +141,26 @@ export default {
 					phoneNumber: "15912510617"
 				})
 				return
+			} else if (inx == 0) {
+				this.stopLoc()
 			}
+		},
+		locChange(res) {
+			// console.log(res)
+			let {latitude, longitude} = res
+
+			this.latitude = latitude
+			this.longitude = longitude
+		},
+		stopLoc() {
 			this.$showModal({
-				content: `${inx}`,
-				
+				title: '完成配送',
+				content: `完成时间: ${dayjs(new Date()).format('YYYY-MM-DD hh:ss')}`,
+				showCancel: true,
+				successCb: _ => {
+					wx.stopLocationUpdate()
+					this.timer && clearInterval(this.timer)
+				}
 			})
 		}
 	}
