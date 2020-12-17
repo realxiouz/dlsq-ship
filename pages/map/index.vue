@@ -9,17 +9,33 @@
 		</div>
 		
 		<div class="main-content" :style="{height: `calc(100vh - ${h}px)`}">
-			<map
-				v-show="curTab==0"
-				style="width:100%;height:100%;"
-				:markers="markers"
-				:polyline="polyline"
-				:latitude="latitude"
-				:longitude="longitude"
-			></map>
+			<div v-show="curTab==0" class="flex flex-direction" style="height:100%;">
+				<map
+					class="flex-sub"
+					:markers="markers"
+					:polyline="polyline"
+					:latitude="latitude"
+					:longitude="longitude"
+					style="width:100%;"
+				></map>
+				<div style="height:100rpx;background:#5077a8;color:#fff;" class="flex font12">
+					<div class="flex-sub flex flex-direction align-center justify-center" @click="onAction(0)">
+						<img src="/static/img/a0.png" style="width:48rpx;height:48rpx;margin-bottom:6rpx;" />
+						<div>完成配送</div>
+					</div>
+					<div class="flex-sub flex flex-direction align-center justify-center" @click="onAction(1)">
+						<img src="/static/img/a1.png" style="width:48rpx;height:48rpx;margin-bottom:6rpx;" />
+						<div>联系对方</div>
+					</div>
+					<div class="flex-sub flex flex-direction align-center justify-center" @click="onAction(2)">
+						<img src="/static/img/a2.png" style="width:48rpx;height:48rpx;margin-bottom:6rpx;" />
+						<div>订单信息</div>
+					</div>
+				</div>
+			</div>
 		</div>
 
-		<cover-view v-if="curTab==0" class="action flex" :class="{show:showAction}" >
+		<!-- <cover-view v-if="curTab==0" class="action flex" :class="{show:showAction}" >
 			<cover-view class="flex-sub flex flex-direction align-center justify-center" @click="onAction(0)">
 				<cover-image src="/static/img/a0.png" style="width:48rpx;height:48rpx;margin-bottom:6rpx;" />
 				<cover-view>完成配送</cover-view>
@@ -33,7 +49,7 @@
 				<cover-view>订单信息</cover-view>
 			</cover-view>
 			<cover-view style="width:100rpx;" @click.stop="showAction=!showAction"></cover-view>
-		</cover-view>
+		</cover-view> -->
 	</div>
 </template>
 
@@ -77,7 +93,7 @@ export default {
 					longitude: 118.685713,
 					iconPath: '/static/img/loc0.png',
 					width: 40,
-					height:40
+					height: 40
 				}
 			],
 			polyline: [
