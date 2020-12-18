@@ -1,12 +1,12 @@
 <template>
 	<div>
 		<div class="tab-wrap flex justify-around">
-			<!-- <div class="flex flex-direction align-center" @click.stop="toggleTab(inx)" v-for="(i, inx) in tabs" :key="inx" style="color:#fff;font-size:8px;">
-				<img style="width:60rpx;height:60rpx;margin-top:14rpx" :src="i.img" alt="">
+			<div class="flex flex-direction align-center" @click.stop="toggleTab(inx)" v-for="(i, inx) in tabs" :key="inx" style="color:#fff;font-size:8px;">
+				<image style="width:60rpx;height:60rpx;margin-top:14rpx" :src="i.img" alt="">
 				<div style="line-height:40rpx;">{{i.title}}</div>
 				<div class="sj" v-if="inx==curTab"></div>
-			</div> -->
-			<div class="flex flex-direction align-center" @click.stop="toggleTab(0)" style="color:#fff;font-size:8px;">
+			</div>
+			<!-- <div class="flex flex-direction align-center" @click.stop="toggleTab(0)" style="color:#fff;font-size:8px;">
 				<image style="width:60rpx;height:60rpx;margin-top:14rpx" src="../../static/img/nav0.png" alt="">
 				<div style="line-height:40rpx;">正在配送</div>
 				<div class="sj" v-if="0==curTab"></div>
@@ -20,18 +20,19 @@
 				<image style="width:60rpx;height:60rpx;margin-top:14rpx" src="../../static/img/nav2.png" alt="">
 				<div style="line-height:40rpx;">预约订单</div>
 				<div class="sj" v-if="2==curTab"></div>
-			</div>
+			</div> -->
 			
 		</div>
 		
 		<div class="main-content" :style="{height: `calc(100vh - ${h}px)`}">
-			<div v-show="curTab==0" class="flex flex-direction" style="height:100%;padding:0rpx 30rpx 0">
+			<div v-show="curTab==0&&isShip" class="flex flex-direction" style="height:100%;padding:0rpx 0rpx 0">
 				<map
 					class="flex-sub"
 					:markers="markers"
 					:polyline="polyline"
 					:latitude="latitude"
 					:longitude="longitude"
+					:include-points="allPoints"
 					style="width:100%;"
 				></map>
 				<div style="height:100rpx;background:#5077a8;color:#fff;" class="flex font12">
@@ -48,6 +49,10 @@
 						<div>订单信息</div>
 					</div>
 				</div>
+			</div>
+			<div v-show="curTab==0&&!isShip" class="flex flex-direction align-center justify-center" style="height:100%;">
+				<image style="width:280rpx;height:280rpx;" src="/static/img/empty.png" alt="">
+				<div style="margin-top:40rpx;" @click="mockShip">暂无配送订单, 点击模拟配送</div>
 			</div>
 			<scroll-view v-if="curTab==1" scroll-y style="height:100%" @scrolltolower="onMore">
 				<div v-for="(i,inx) in list" :key="inx">
@@ -159,54 +164,36 @@ const TABS = [
 ]
 export default {
 	onLoad() {
-		wx.startLocationUpdateBackground({
-			success: _ => {
-				this.$toast('开始持续定位')
-				console.log('---loc start---')
-			},
-			fail: e => {
-				console.log(e)
-			}
-		})
-		this.upLoadLocation()
-		wx.onLocationChange(this.locChange)
+		// #ifdef MP-WEIXIN
+		// wx.startLocationUpdateBackground({
+		// 	success: _ => {
+		// 		this.$toast('开始持续定位')
+		// 		console.log('---loc start---')
+		// 	},
+		// 	fail: e => {
+		// 		console.log(e)
+		// 	}
+		// })
+		// this.upLoadLocation()
+		// wx.onLocationChange(this.locChange)
+		// #endif
 	},
 	data() {
 		return {
-			markers: [
-				{
-					latitude: 40.013305,
-					longitude: 118.685713,
-					iconPath: '/static/img/loc1.png',
-					width: 40,
-					height: 40
-				}
-			],
+			allPoints: [],
+			markers: [],
 			polyline: [
 				{
-					points: [
-						{
-							latitude: 40.013305,
-							longitude: 118.685713,
-						},
-						{
-							latitude: 40.013305,
-							longitude: 118.68572,
-						},
-						{
-							latitude: 40.013305,
-							longitude: 118.68571,
-						}
-					],
+					points: [],
 					color: '#496BA0',
-					width: 2
+					width: 4
 				}
 			],
 			agentId:0,
-			title: 'map', //地图标题
-			latitude: 40.013305,  //纬度
-			longitude: 118.685713,
-
+			title: 'map',
+			latitude: '',
+			longitude: '',
+			isShip: false,
 			curTab: 0,
 			tabs: TABS,
 			showAction: true,
@@ -224,17 +211,26 @@ export default {
 		upLoadLocation() {
 			if (!this.timer) {
 				this.timer = setInterval(_ => {
-					let d = {
-						lat: this.latitude,
-						lng: this.longitude,
-						store_id: 1,
-					}
-					this.$post('store/store/location', d)
-						.then(r => {
-							console.log(r)
-						})
-						.catch(e => {
-							console.log(e)
+					uni.getLocation({
+						type: 'gcj02',
+						success: ({latitude, longitude}) => {
+							this.polyline[0].points.push({
+								latitude,
+								longitude
+							})
+							let d = {
+								lat: latitude,
+								lng: longitude,
+								store_id: 1,
+							}
+							this.$post('store/store/location', d)
+								.then(r => {
+									console.log(r)
+								})
+								.catch(e => {
+									console.log(e)
+								})
+							},
 						})
 				}, 1000 * INTERVER)
 			}
@@ -247,6 +243,8 @@ export default {
 				return
 			} else if (inx == 0) {
 				this.stopLoc()
+			} else if (inx == 2) {
+				this.$toast(`${this.polyline[0].points.map(i => i.latitude).join(',')}`)
 			}
 		},
 		locChange(res) {
@@ -262,13 +260,68 @@ export default {
 				content: `完成时间: ${dayjs(new Date()).format('YYYY-MM-DD hh:ss')}`,
 				showCancel: true,
 				successCb: _ => {
-					wx.stopLocationUpdate()
+					// wx.stopLocationUpdate()
+					this.isShip = false
 					this.timer && clearInterval(this.timer)
 				}
 			})
 		},
 		onMore() {
 			console.log(1)
+		},
+		mockShip() {
+			this.markers = []
+			this.polyline.points = []
+			this.allPoints = []
+			this.$nextTick(_ => {
+				uni.getLocation({
+					type: 'gcj02',
+					success: ({latitude, longitude}) => {
+						this.latitude = latitude
+						this.longitude = longitude
+						console.log(latitude)
+						console.log(longitude)
+						this.markers = [
+							{
+								latitude,
+								longitude,
+								iconPath: '/static/img/loc0.png',
+								width: 40,
+								height: 40
+							},
+							{
+								latitude: 24.88554,
+								longitude: 102.82147,
+								iconPath: '/static/img/loc1.png',
+								width: 40,
+								height: 40
+							}
+						]
+	
+						this.polyline[0].points.push({
+							latitude,
+							longitude
+						})
+	
+						this.allPoints = [
+							{
+								latitude,
+								longitude,
+							},
+							{
+								latitude: 24.88554,
+								longitude: 102.82147,
+							}
+						]
+						this.upLoadLocation()
+						this.isShip = true
+					},
+					fail: e => {
+						console.log(e)
+						this.$toast('定位失败！请打开GPS后重试！')
+					}
+				})
+			})
 		}
 	}
 }
