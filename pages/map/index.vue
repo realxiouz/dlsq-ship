@@ -50,7 +50,7 @@
 					</div>
 				</div>
 			</div>
-			<div v-show="curTab==0&&!isShip" class="flex flex-direction align-center justify-center" style="height:100%;">
+			<div v-if="curTab==0&&!isShip" class="flex flex-direction align-center justify-center" style="height:100%;">
 				<image style="width:280rpx;height:280rpx;" src="/static/img/empty.png" alt="">
 				<div style="margin-top:40rpx;" @click="mockShip">暂无配送订单, 点击模拟配送</div>
 			</div>
@@ -182,13 +182,7 @@ export default {
 		return {
 			allPoints: [],
 			markers: [],
-			polyline: [
-				{
-					points: [],
-					color: '#496BA0',
-					width: 4
-				}
-			],
+			polyline: [],
 			agentId:0,
 			title: 'map',
 			latitude: '',
@@ -211,12 +205,15 @@ export default {
 		upLoadLocation() {
 			if (!this.timer) {
 				this.timer = setInterval(_ => {
+					// this.latitude += 0.001
 					uni.getLocation({
 						type: 'gcj02',
 						success: ({latitude, longitude}) => {
 							this.polyline[0].points.push({
 								latitude,
 								longitude
+								// latitude: this.latitude,
+								// longitude: this.longitude
 							})
 							let d = {
 								lat: latitude,
@@ -230,8 +227,11 @@ export default {
 								.catch(e => {
 									console.log(e)
 								})
-							},
-						})
+						},
+						fail: e => {
+							console.log(e)
+						}
+					})
 				}, 1000 * INTERVER)
 			}
 		},
@@ -263,6 +263,7 @@ export default {
 					// wx.stopLocationUpdate()
 					this.isShip = false
 					this.timer && clearInterval(this.timer)
+					this.timer = null
 				}
 			})
 		},
@@ -271,57 +272,62 @@ export default {
 		},
 		mockShip() {
 			this.markers = []
-			this.polyline.points = []
 			this.allPoints = []
-			this.$nextTick(_ => {
-				uni.getLocation({
-					type: 'gcj02',
-					success: ({latitude, longitude}) => {
-						this.latitude = latitude
-						this.longitude = longitude
-						console.log(latitude)
-						console.log(longitude)
-						this.markers = [
-							{
-								latitude,
-								longitude,
-								iconPath: '/static/img/loc0.png',
-								width: 40,
-								height: 40
-							},
-							{
-								latitude: 24.88554,
-								longitude: 102.82147,
-								iconPath: '/static/img/loc1.png',
-								width: 40,
-								height: 40
-							}
-						]
-	
-						this.polyline[0].points.push({
+			uni.getLocation({
+				type: 'gcj02',
+				success: ({latitude, longitude}) => {
+					this.latitude = latitude
+					this.longitude = longitude
+					console.log(latitude)
+					console.log(longitude)
+					this.markers = [
+						{
 							latitude,
-							longitude
-						})
-	
-						this.allPoints = [
-							{
-								latitude,
-								longitude,
-							},
-							{
-								latitude: 24.88554,
-								longitude: 102.82147,
-							}
-						]
-						this.upLoadLocation()
+							longitude,
+							iconPath: '/static/img/loc0.png',
+							width: 40,
+							height: 40
+						},
+						{
+							latitude: 24.88554,
+							longitude: 102.82147,
+							iconPath: '/static/img/loc1.png',
+							width: 40,
+							height: 40
+						}
+					]
+					this.polyline = [
+						{
+							points: [
+								{latitude, longitude}
+							],
+							color: '#496BA0',
+							width: 4
+						}
+					]
+
+					// this.allPoints = [
+					// 	{
+					// 		latitude,
+					// 		longitude,
+					// 	},
+					// 	{
+					// 		latitude: 24.88554,
+					// 		longitude: 102.82147,
+					// 	}
+					// ]
+					this.upLoadLocation()
+					this.$nextTick(_ => {
 						this.isShip = true
-					},
-					fail: e => {
-						console.log(e)
-						this.$toast('定位失败！请打开GPS后重试！')
-					}
-				})
+						this.$forceUpdate()
+					})
+				},
+				fail: e => {
+					console.log(e)
+					this.$toast('定位失败！请打开GPS后重试！')
+				}
 			})
+			
 		}
 	}
 }
