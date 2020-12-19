@@ -14,7 +14,7 @@ export const http = (url, data, method = 'post', showErrToast = true) => {
     let header = {
       platform: 'wxMiniProgram'
     }
-    let token = store.state.user.token
+    let token = uni.getStorageSync('token')
     token && (header.token = token)
     uni
       .request({

@@ -22,55 +22,55 @@ Vue.prototype.$toast = (title = '', icon = 'none') =>
     icon,
   })
 
-// Vue.prototype.$go = (url, type = 'navigate', opt = {}) => {
-//   switch (type) {
-//     case 'navigate':
-//       uni.navigateTo({
-//         url,
-//       })
-//       break
-//     case 'relanch':
-//       uni.reLaunch({
-//         url,
-//       })
-//       break
-//     case 'redirect':
-//       uni.redirectTo({
-//         url,
-//       })
-//       break
-//     case 'switch':
-//       uni.switchTab({
-//         url,
-//       })
-//       break
-//     case 'back':
-//       uni.navigateBack({
-//         delta: url,
-//       })
-//       break
-//     case 'single':
-//       let urls = getCurrentPages().map((i) => i.route)
-//       let inx = urls.findIndex((i) => i == getRoute(url))
-//       if (inx >= 0) {
-//         uni.navigateBack({
-//           delta: urls.length - 1 - inx,
-//         })
-//       } else {
-//         uni.navigateTo({ url })
-//       }
-//       break
-//     case 'mp':
-//       uni.navigateToMiniProgram({
-//         appId: opt.appId || MP_XLS_ID,
-//         path: url,
-//         extraData: opt.extraData,
-//         success: opt.success,
-//         fail: opt.fail,
-//       })
-//       break
-//   }
-// }
+Vue.prototype.$go = (url, type = 'navigate', opt = {}) => {
+  switch (type) {
+    case 'navigate':
+      uni.navigateTo({
+        url,
+      })
+      break
+    case 'relanch':
+      uni.reLaunch({
+        url,
+      })
+      break
+    case 'redirect':
+      uni.redirectTo({
+        url,
+      })
+      break
+    case 'switch':
+      uni.switchTab({
+        url,
+      })
+      break
+    case 'back':
+      uni.navigateBack({
+        delta: url,
+      })
+      break
+    case 'single':
+      let urls = getCurrentPages().map((i) => i.route)
+      let inx = urls.findIndex((i) => i == getRoute(url))
+      if (inx >= 0) {
+        uni.navigateBack({
+          delta: urls.length - 1 - inx,
+        })
+      } else {
+        uni.navigateTo({ url })
+      }
+      break
+    case 'mp':
+      uni.navigateToMiniProgram({
+        appId: opt.appId || MP_XLS_ID,
+        path: url,
+        extraData: opt.extraData,
+        success: opt.success,
+        fail: opt.fail,
+      })
+      break
+  }
+}
 
 // Vue.prototype.$handleAd = ({ adType, url, remark }) => {
 //   console.log(adType)
