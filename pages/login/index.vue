@@ -1,6 +1,7 @@
 <template>
 	<view class="login">
-		<image class="login-img" src="../../static/img/logo.png" mode="widthFix" />
+		<!-- <image class="login-img" src="/static/img/logo.png" mode="widthFix" /> -->
+		<div class="login-img"></div>
 		<view class="form">
 			<view class="form-item"><input class="text" type="text" v-model="form.account" placeholder="请输入手机号" /></view>
 			<view class="form-item">
@@ -27,9 +28,9 @@ export default {
 	onLoad() {
 		let user = JSON.parse(uni.getStorageSync('userInfo')) || {};
 		let autologin = uni.getStorageSync('autologin');
-		if (user.token && autologin) {
-			this.$go('/pages/map/index', 'switch')
-		}
+		// if (user.token && autologin) {
+		// 	this.$go('/pages/map/index', 'switch')
+		// }
 	},
 	methods: {
 		check() {

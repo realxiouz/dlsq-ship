@@ -12,7 +12,8 @@ function getUrl(url) {
 export const http = (url, data, method = 'post', showErrToast = true) => {
   return new Promise((resolve, reject) => {
     let header = {
-      platform: 'wxMiniProgram'
+      platform: 'wxMiniProgram',
+      'content-type': 'application/x-www-form-urlencoded'
     }
     let token = uni.getStorageSync('token')
     token && (header.token = token)

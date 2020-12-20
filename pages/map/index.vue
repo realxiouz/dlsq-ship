@@ -52,7 +52,7 @@
 			</div>
 			<div v-if="curTab==0&&!isShip" class="flex flex-direction align-center justify-center" style="height:100%;">
 				<image style="width:280rpx;height:280rpx;" src="/static/img/empty.png" alt="">
-				<div style="margin-top:40rpx;" @click="mockShip">暂无配送订单, 点击模拟配送</div>
+				<div style="margin-top:40rpx;">暂无配送订单</div>
 			</div>
 			<scroll-view v-if="curTab==1" scroll-y style="height:100%" @scrolltolower="onMore">
 				<div v-for="(i,inx) in list" :key="inx">
@@ -60,29 +60,33 @@
 						<div class="flex" style="padding: 20rpx 0;">
 							<div><span class="text-bold">配送信息：</span>{{'xx毫升桶装水  2桶'}}</div>
 							<div class="flex-sub"></div>
-							<div><span class="text-bold">状态：</span>{{'进行中'}}</div>
+							<div><span class="text-bold">状态：</span>{{i.status_name}}</div>
 						</div>
 						<div class="flex align-center" style="margin-bottom:20rpx;">
 							<image src="/static/img/no.png" style="width:24rpx;height:24rpx;margin-right:8rpx;" alt="">
 							<div class="text-bold">订单号：</div>
-							<div>{{'02549845612587'}}</div>
+							<div>{{i.order_sn}}</div>
 						</div>
 						<div class="flex align-center" style="margin-bottom:20rpx;">
 							<image src="/static/img/no.png" style="width:24rpx;height:24rpx;margin-right:8rpx;" alt="">
 							<div class="text-bold">收货人：</div>
-							<div>{{'02549845612587'}}</div>
+							<div>{{i.consignee}}</div>
 						</div>
 						<div class="flex align-center" style="margin-bottom:20rpx;">
 							<image src="/static/img/phone.png" style="width:24rpx;height:24rpx;margin-right:8rpx;" alt="">
 							<div class="text-bold">电话：</div>
-							<div>{{'02549845612587'}}</div>
+							<div>{{i.phone}}</div>
 						</div>
 						<div class="flex align-center" style="margin-bottom:20rpx;">
 							<image src="/static/img/location.png" style="width:24rpx;height:24rpx;margin-right:8rpx;" alt="">
 							<div class="text-bold">地址: </div>
-							<div>{{'02549845612587'}}</div>
+							<div>{{i.address}}</div>
 							<div class="flex-sub"></div>
-							<div style="line-height:34rpx;border-radius:17rpx;width:120rpx;background:#FFCE50;text-align:center;font-size:10px;">完成配送</div>
+							<div style="line-height:34rpx;border-radius:17rpx;width:120rpx;background:#FFCE50;text-align:center;font-size:10px;"
+								@click="onOrder(i)"
+							>
+								{{i.status_name == '待配送' ? '开始配送' : '完成配送'}}
+							</div>
 						</div>
 					</div>
 					<div style="height:57rpx;border-top:1rpx solid #868686;border-bottom:1rpx solid #868686;"></div>
@@ -147,7 +151,7 @@
 <script>
 import dayjs from 'dayjs'
 let h = uni.upx2px(125)
-const INTERVER = 3
+const INTERVER = 10
 const TABS = [
 	{
 		img: '/static/img/nav0.png',
@@ -164,30 +168,30 @@ const TABS = [
 ]
 export default {
 	onLoad() {
-		// #ifdef MP-WEIXIN
-		// wx.startLocationUpdateBackground({
-		// 	success: _ => {
-		// 		this.$toast('开始持续定位')
-		// 		console.log('---loc start---')
-		// 	},
-		// 	fail: e => {
-		// 		console.log(e)
-		// 	}
-		// })
-		// this.upLoadLocation()
-		// wx.onLocationChange(this.locChange)
+		this.getShippingData()
+		// #ifdef APP-PLUS
+		this.subNVue = uni.getSubNVueById('popup')
+		this.subNVue.hide()
+		uni.$on('close', _ => {
+			this.subNVue.hide()
+		})
 		// #endif
 	},
 	data() {
 		return {
 			allPoints: [],
 			markers: [],
-			polyline: [],
-			agentId:0,
-			title: 'map',
+			polyline: [
+				{
+					points: [],
+					color: '#496BA0',
+					width: 12
+				}
+			],
 			latitude: '',
 			longitude: '',
 			isShip: false,
+			orderId: '', // 配送id
 			curTab: 0,
 			tabs: TABS,
 			showAction: true,
@@ -195,30 +199,48 @@ export default {
 
 			timer: null,
 
-			list: [1,2,3],
+			list: [],
+
+			orderInfo: {
+
+			},
+			subNVue: null,
 		}
 	},
 	methods: {
 		toggleTab(inx) {
-			this.curTab = inx
+			if (this.curTab != inx) {
+				this.curTab = inx
+				switch(this.curTab) {
+					case 0:
+						this.getShippingData()
+						break
+					case 1:
+						this.getOrderList(true)
+						break
+					case 2:
+						
+						break
+				}
+			}
 		},
 		upLoadLocation() {
 			if (!this.timer) {
 				this.timer = setInterval(_ => {
-					// this.latitude += 0.001
 					uni.getLocation({
 						type: 'gcj02',
 						success: ({latitude, longitude}) => {
+							this.$toast(`${latitude},${longitude}`)
 							this.polyline[0].points.push({
 								latitude,
 								longitude
-								// latitude: this.latitude,
-								// longitude: this.longitude
 							})
+							this.$forceUpdate()
 							let d = {
 								lat: latitude,
 								lng: longitude,
 								store_id: 1,
+								order_id: this.orderId,
 							}
 							this.$post('store/store/location', d)
 								.then(r => {
@@ -230,6 +252,7 @@ export default {
 						},
 						fail: e => {
 							console.log(e)
+							this.$toast(e)
 						}
 					})
 				}, 1000 * INTERVER)
@@ -238,13 +261,17 @@ export default {
 		onAction(inx) {
 			if (inx==1) {
 				uni.makePhoneCall({
-					phoneNumber: "15912510617"
+					phoneNumber: this.orderInfo.phone
 				})
 				return
 			} else if (inx == 0) {
 				this.stopLoc()
 			} else if (inx == 2) {
-				this.$toast(`${this.polyline[0].points.map(i => i.latitude).join(',')}`)
+				uni.$emit('info', this.orderInfo)
+				this.subNVue.show('slide-in-left', 300, _ => {
+					this.$toast('snve success')
+				});  
+				// subNVue.hide('fade-out', 300)
 			}
 		},
 		locChange(res) {
@@ -260,17 +287,36 @@ export default {
 				content: `完成时间: ${dayjs(new Date()).format('YYYY-MM-DD hh:ss')}`,
 				showCancel: true,
 				successCb: _ => {
-					// wx.stopLocationUpdate()
-					this.isShip = false
-					this.timer && clearInterval(this.timer)
-					this.timer = null
+					this.$put('store/order/confirm', {
+						store_id: 1,
+						id: this.orderId
+					}).then(r => {
+						this.isShip = false
+						this.timer && clearInterval(this.timer)
+						this.timer = null
+						this.orderId = null
+						this.$toast('配送完成~~~')
+					})
 				}
 			})
 		},
 		onMore() {
 			console.log(1)
+			if (this.isLoading || this.isEnd) {
+				return
+			}
+			this.page++
+			this.getOrderList()
 		},
 		mockShip() {
+			let d = {
+				id: this.orderId,
+				store_id: 1
+			}
+			this.$get('store/order/detail', d)
+				.then(r => {
+					this.orderInfo = r.data
+				})
 			this.markers = []
 			this.allPoints = []
 			uni.getLocation({
@@ -296,15 +342,15 @@ export default {
 							height: 40
 						}
 					]
-					this.polyline = [
-						{
-							points: [
-								{latitude, longitude}
-							],
-							color: '#496BA0',
-							width: 4
-						}
-					]
+					// this.polyline = [
+					// 	{
+					// 		points: [
+					// 			{latitude, longitude}
+					// 		],
+					// 		color: '#496BA0',
+					// 		width: 4
+					// 	}
+					// ]
 
 					// this.allPoints = [
 					// 	{
@@ -316,7 +362,7 @@ export default {
 					// 		longitude: 102.82147,
 					// 	}
 					// ]
-					this.upLoadLocation()
+					// this.upLoadLocation()
 					this.$nextTick(_ => {
 						this.isShip = true
 						this.$forceUpdate()
@@ -328,11 +374,91 @@ export default {
 				}
 			})
 			
+		},
+		getOrderList(reset = false) {
+			if (reset) {
+				this.list = []
+				this.page = 1
+				this.isEnd = false
+			}
+			let d = {
+				page: this.page,
+				type: 'nosend',
+				store_id: 1,
+				order_type: 'delivery'
+			}
+			this.isLoading = true
+			this.$get('store/order/index', d)
+				.then(r => {
+					let {data = [], last_page} = r.data.result
+					if (this.page >= last_page) {
+						this.isEnd = true
+					}
+					this.list.push(...data)
+				})
+				.finally(_ => {
+					this.isLoading = false
+				})
+		},
+		onOrder(i) {
+			if (i.status_name == '待配送') {
+				if (this.isShip) {
+					this.$toast('当前还有订单配送中,必须完成订单才能重新配送~~~')
+					return
+				}
+				this.$showModal({
+					content: '确定开始配送么?',
+					showCancel: true,
+					successCb: _ => {
+						let d = {
+							store_id: '1',
+							id: i.id
+						}
+						this.$put('store/order/send', d)
+							.then(r => {
+								this.orderId = i.id
+								this.mockShip()
+
+								this.upLoadLocation()
+
+								this.$showModal({
+									content: '开始配送~~~',
+									successCb: _ => {
+										this.toggleTab(0)
+									}
+								})
+							})
+					}
+				})
+			}
+		},
+		getShippingData() {
+			if (!this.isShip) {
+				let d = {
+					page: 1,
+					type: 'noget',
+					store_id: 1,
+					order_type: 'delivery'
+				}
+				this.$get('store/order/index', d)
+					.then(r => {
+						let { data=[] } = r.data.result
+						if (data.length) {
+							this.orderId = data[0].id
+							this.mockShip()
+							this.upLoadLocation()
+						}
+					})
+			}
 		}
 	}
 }
 </script>
 
+<style>
+	@import "../../colorui/main.css";
+	/* @import "../../colorui/icon.css"; */
+</style>
 <style lang="less" scoped>
 .tab-wrap{
 	height: 200rpx;

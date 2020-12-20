@@ -10,115 +10,40 @@
 			"path":"pages/map/index",
 			"style": {
 				"navigationStyle": "default",
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "配送中心",
+				"app-plus": {  
+					"subNVues":[{  
+							"id": "popup",
+							"path": "pages/map/detail",
+							"style": {  
+								"position": "popup",
+								"margin":"auto",
+								"width": "60%",
+								"height": "200rpx"
+							}  
+					}]  
+				}  
 			}
 		},
 		{
 			"path":"pages/me/index",
 			"style": {
-				"navigationStyle": "default"
+				"navigationStyle": "default",
+				"navigationBarTitleText": "我的",
+				"app-plus": {
+					"subNVues":[{  
+							"id": "test",
+							"path": "pages/me/test",
+							"style": {  
+								"position": "popup",
+								"margin":"auto",
+								"width": "80%",
+								"height": "400rpx"
+							}  
+					}]  
+				}  
 			}
 		}
-		// {
-		// 	"path": "pages/index/index",
-		// 	"style": {}
-		// },
-		// {
-		// 	"path": "pages/basics/layout",
-		// 	"style": {}
-		// },
-		// {
-		// 	"path": "pages/basics/background",
-		// 	"style": {}
-		// },
-		// {
-		// 	"path": "pages/basics/text",
-		// 	"style": {}
-		// },
-		// {
-		// 	"path": "pages/basics/icon",
-		// 	"style": {}
-		// },
-		// {
-		// 	"path": "pages/basics/button",
-		// 	"style": {}
-		// },
-		// {
-		// 	"path": "pages/basics/design",
-		// 	"style": {}
-		// },
-		// {
-		// 	"path": "pages/basics/tag",
-		// 	"style": {}
-		// },
-		// {
-		// 	"path": "pages/basics/avatar",
-		// 	"style": {}
-		// },
-		// {
-		// 	"path": "pages/basics/progress",
-		// 	"style": {}
-		// },
-		// {
-		// 	"path": "pages/basics/shadow",
-		// 	"style": {}
-		// },
-		// {
-		// 	"path": "pages/basics/loading",
-		// 	"style": {}
-		// },
-		// {
-		// 	"path": "pages/component/bar",
-		// 	"style": {}
-		// },
-		// {
-		// 	"path": "pages/component/nav",
-		// 	"style": {}
-		// },
-		// {
-		// 	"path": "pages/component/list",
-		// 	"style": {}
-		// },
-		// {
-		// 	"path": "pages/component/card",
-		// 	"style": {}
-		// },
-		// {
-		// 	"path": "pages/component/form",
-		// 	"style": {}
-		// },
-		// {
-		// 	"path": "pages/component/timeline",
-		// 	"style": {}
-		// },
-		// {
-		// 	"path": "pages/component/chat",
-		// 	"style": {}
-		// },
-		// {
-		// 	"path": "pages/component/swiper",
-		// 	"style": {}
-		// },
-		// {
-		// 	"path": "pages/component/modal",
-		// 	"style": {}
-		// },
-		// {
-		// 	"path": "pages/component/steps",
-		// 	"style": {}
-		// }, {
-		// 	"path": "pages/plugin/indexes",
-		// 	"style": {}
-		// }, {
-		// 	"path": "pages/plugin/animation",
-		// 	"style": {}
-		// }, {
-		// 	"path": "pages/plugin/drawer",
-		// 	"style": {}
-		// }, {
-		// 	"path": "pages/plugin/verticalnav",
-		// 	"style": {}
-		// }
 	],
 	"tabBar": {
 		"color": "#C3C3C3",
