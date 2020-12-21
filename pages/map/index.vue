@@ -268,10 +268,7 @@ export default {
 				this.stopLoc()
 			} else if (inx == 2) {
 				uni.$emit('info', this.orderInfo)
-				this.subNVue.show('slide-in-left', 300, _ => {
-					this.$toast('snve success')
-				});  
-				// subNVue.hide('fade-out', 300)
+				this.subNVue.show();  
 			}
 		},
 		locChange(res) {

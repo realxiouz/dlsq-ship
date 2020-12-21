@@ -46,12 +46,14 @@ export default {
 .wrap{
 	padding: 10px 6px 0 6rpx;
 	font-size: 12px;
-	background-color: #FFCEFE;
+	background-color: #FFCE5E;
 }
 .bold{
 	font-weight: bold;
 }
 .mb{
 	margin-bottom: 6rpx;
+	display: flex;
+	flex-direction: row;
 }
 </style>

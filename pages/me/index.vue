@@ -4,7 +4,6 @@
       <div class="flex flex-direction align-center" style="padding-top:30rpx;">
         <div style="width:180rpx;height:180rpx;background:rgba(255,255,255,.4);border-radius:50%;" class="pos-r">
           <img
-						@click="onTest"
             class="pos-a"
             style="width:132rpx;height:132rpx;border-radius:50%;top:50%;left:50%;margin-left:-66rpx;margin-top:-66rpx;"
             :src="info.avatar"
@@ -31,14 +30,6 @@ import { mapState } from 'vuex'
 export default {
   onLoad(opt) {
     this.info = JSON.parse(uni.getStorageSync('userInfo')) || {}
-		
-		// #ifdef APP-PLUS
-		this.subNVue = uni.getSubNVueById('test')
-		this.subNVue.hide()
-		uni.$on('close1', _ => {
-			this.subNVue.hide()
-		})
-		// #endif
   },
   data() {
     return {
@@ -49,23 +40,7 @@ export default {
   computed: {
   },
   methods: {
-    onTest() {
-			uni.$emit('info1', {
-				order_sn: '123456',
-				consignee: 'my',
-				phone: 15912510617,
-				address: '昆明',
-				item: [
-					{
-						goods_title: '15l桶装水',
-						goods_num: 2
-					}
-				]
-			})
-			this.subNVue.show('slide-in-left', 300, _ => {
-				this.$toast('snve success')
-			});
-		}
+    
   }
 }
 </script>
