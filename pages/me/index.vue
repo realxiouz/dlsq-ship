@@ -13,14 +13,22 @@
           <div class="font14" style="color:#fff;">{{info.nickname}}</div>
         </div>
       </div>
-
       <div class="water">
-				<div class="water-c">
-					<div class="water-1"> </div>
-					<div class="water-2"> </div>
-				</div>
-			</div>
+		<div class="water-c">
+			<div class="water-1"> </div>
+			<div class="water-2"> </div>
+		</div>
+	</div>
     </div>
+	<div style="height:40rpx;"></div>
+	<div class="flex align-center" style="background-color: #fff;">
+		<image src="/static/img/msg.png" style="width: 24rpx;height:24rpx;margin-right:12rpx" mode=""></image>
+		<div style="font-size: 12px;font-weight: bold;color: #333;">配送记录</div>
+		<div class="flex-sub"></div>
+		<picker mode="date" @change="onDateChange">
+			<image src="/static/img/search.png" style="width:60rpx;height: 60rpx;"></image>
+		</picker>
+	</div>
   </div>
 </template>
 
@@ -30,17 +38,48 @@ import { mapState } from 'vuex'
 export default {
   onLoad(opt) {
     this.info = JSON.parse(uni.getStorageSync('userInfo')) || {}
+	this.getData()
   },
   data() {
     return {
       info: {},
-			subNVue: null,
+	  page: 1,
+	  list: [],
+	  isEnd: false,
+	  isLoading: false,
     }
   },
   computed: {
   },
   methods: {
-    
+    onDateChange(e) {
+		console.log(e.detail.value)
+	},
+	getData(reset = false) {
+		if (reset) {
+			this.list = []
+			this.page = 1
+			this.isEnd = false
+		}
+		let d = {
+			page: this.page,
+			type: 'nosend',
+			store_id: 1,
+			order_type: 'delivery'
+		}
+		this.isLoading = true
+		this.$get('store/order/index', d)
+			.then(r => {
+				let {data = [], last_page} = r.data.result
+				if (this.page >= last_page) {
+					this.isEnd = true
+				}
+				this.list.push(...data)
+			})
+			.finally(_ => {
+				this.isLoading = false
+			})
+	}
   }
 }
 </script>
@@ -49,6 +88,12 @@ export default {
 	@import "../../colorui/main.css";
 </style>
 <style>
+	.pos-r{
+		position: relative;
+	}
+	.pos-a{
+		position: absolute;
+	}
 	.water {
 		position: absolute;
 		left: 0;
