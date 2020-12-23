@@ -1,5 +1,5 @@
 <template>
-  <div style="height:100vh;" class="pos-r">
+  <div>
     <div style="background:#5077a9;height:370rpx;position: relative">
       <div class="flex flex-direction align-center" style="padding-top:30rpx;">
         <div style="width:180rpx;height:180rpx;background:rgba(255,255,255,.4);border-radius:50%;" class="pos-r">
@@ -14,14 +14,25 @@
         </div>
       </div>
       <div class="water">
-		<div class="water-c">
-			<div class="water-1"> </div>
-			<div class="water-2"> </div>
+			<div class="water-c">
+				<div class="water-1"> </div>
+				<div class="water-2"> </div>
+			</div>
 		</div>
-	</div>
     </div>
 		<div style="height:40rpx;"></div>
-		<div class="flex align-center" style="background-color: #fff;padding:20rpx 30rpx 0">
+		<div style="position: sticky;top: 0;z-index: 10;" >
+			<div class="flex align-center" style="background-color: #fff;padding:20rpx 30rpx 0">
+				<image src="/static/img/msg.png" style="width: 24rpx;height:24rpx;margin-right:12rpx" mode=""></image>
+				<div style="font-size: 12px;font-weight: bold;color: #333;">配送记录</div>
+				<div class="flex-sub"></div>
+				<picker mode="date" @change="onDateChange">
+					<image src="/static/img/search.png" style="width:60rpx;height: 60rpx;"></image>
+				</picker>
+			</div>
+			<div style="padding:20rpx;color:#A6A6A6;font-size:10px;background:#fff;">{{!date?'全部':date}}</div>
+		</div>
+		<!-- <div class="flex align-center" style="background-color: #fff;padding:20rpx 30rpx 0">
 			<image src="/static/img/msg.png" style="width: 24rpx;height:24rpx;margin-right:12rpx" mode=""></image>
 			<div style="font-size: 12px;font-weight: bold;color: #333;">配送记录</div>
 			<div class="flex-sub"></div>
@@ -29,7 +40,7 @@
 				<image src="/static/img/search.png" style="width:60rpx;height: 60rpx;"></image>
 			</picker>
 		</div>
-		<div style="padding:20rpx;color:#A6A6A6;font-size:10px;background:#fff;">{{!date?'全部':date}}</div>
+		<div style="padding:20rpx;color:#A6A6A6;font-size:10px;background:#fff;">{{!date?'全部':date}}</div> -->
 		<div style="height:20rpx"></div>
 
 		<div class="ship-info bg-white" v-for="(i,index) in list" :key="index">
@@ -44,9 +55,9 @@
           </div>
         </div>
         <div class="line flex">
-          <div class="title">配送类型</div>
+          <div class="title">配送状态</div>
           <div class="flex-sub"></div>
-          <div>试试配送</div>
+          <div>{{i.status_name}}</div>
         </div>
         <div class="line flex">
           <div class="title">配送地址</div>
@@ -59,15 +70,31 @@
         <div class="line flex">
           <div class="title">配送单号</div>
           <div class="flex-sub"></div>
-          <div>{{orderInfo.order_sn}}</div>
+          <div>{{i.order_sn}}</div>
         </div>
+				<div class="line flex">
+				  <div class="title">下单时间</div>
+				  <div class="flex-sub"></div>
+				  <div>{{i.createtime}}</div>
+				</div>
+				<div class="line flex" v-if="i.status_code=='nocomment'">
+				  <div class="title">完成时间</div>
+				  <div class="flex-sub"></div>
+				  <div>{{formatTime(i.ext_arr.send_time)}}</div>
+				</div>
       </div>
     </div>
+		
+		<div v-if="!list.length" class="flex flex-direction align-center justify-center" style="margin-top:300rpx;">
+			<image style="width:280rpx;height:280rpx;" src="/static/img/empty.png" alt="">
+			<div style="margin-top:40rpx;">暂无配送订单</div>
+		</div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+import dayjs from 'dayjs'
 
 export default {
   onLoad(opt) {
@@ -88,36 +115,51 @@ export default {
   computed: {
   },
   methods: {
+		formatTime(n) {
+			return dayjs(n*1000).format('YYYY-MM-DD HH:mm')
+		},
     onDateChange(e) {
-		this.date = e.detail.value
-		this.getData(true)
-	},
-	getData(reset = false) {
-		if (reset) {
-			this.list = []
-			this.page = 1
-			this.isEnd = false
-		}
-		let d = {
-			page: this.page,
-			type: 'nosend',
-			store_id: 1,
-			order_type: 'delivery'
-		}
-		this.isLoading = true
-		this.$get('store/order/index', d)
-			.then(r => {
-				let {data = [], last_page} = r.data.result
-				if (this.page >= last_page) {
-					this.isEnd = true
-				}
-				this.list.push(...data)
+			this.date = e.detail.value
+			this.getData(true)
+		},
+		getData(reset = false) {
+			if (reset) {
+				this.list = []
+				this.page = 1
+				this.isEnd = false
+			}
+			let d = {
+				page: this.page,
+				// type: 'noget',
+				store_id: 1,
+				order_type: 'delivery'
+			}
+			this.date && (d.date = this.date)
+			this.isLoading = true
+			uni.showLoading({
+				title: '加载中...'
 			})
-			.finally(_ => {
-				this.isLoading = false
-			})
+			this.$get('store/order/index', d)
+				.then(r => {
+					let {data = [], last_page} = r.data.result
+					if (this.page >= last_page) {
+						this.isEnd = true
+					}
+					this.list.push(...data)
+				})
+				.finally(_ => {
+					this.isLoading = false
+					uni.hideLoading()
+				})
 	}
-  }
+  },
+	onReachBottom() {
+		if (this.isLoading || this.isEnd) {
+			return
+		}
+		this.page++
+		this.getData()
+	}
 }
 </script>
 

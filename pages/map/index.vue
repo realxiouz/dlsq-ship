@@ -54,7 +54,7 @@
 				<image style="width:280rpx;height:280rpx;" src="/static/img/empty.png" alt="">
 				<div style="margin-top:40rpx;">暂无配送订单</div>
 			</div>
-			<scroll-view v-if="curTab==1" scroll-y style="height:100%" @scrolltolower="onMore">
+			<scroll-view v-if="curTab==1&&list.length" scroll-y style="height:100%" @scrolltolower="onMore">
 				<div v-for="(i,inx) in list" :key="inx">
 					<div style="padding: 0 20rpx" class="font12">
 						<div class="flex" style="padding: 20rpx 0;">
@@ -80,8 +80,7 @@
 						<div class="flex align-center" style="margin-bottom:20rpx;">
 							<image src="/static/img/location.png" style="width:24rpx;height:24rpx;margin-right:8rpx;" alt="">
 							<div class="text-bold">地址: </div>
-							<div>{{i.address}}</div>
-							<div class="flex-sub"></div>
+							<div class="flex-sub" style="width: 0;">{{i.address}}</div>
 							<div style="line-height:34rpx;border-radius:17rpx;width:120rpx;background:#FFCE50;text-align:center;font-size:10px;"
 								@click="onOrder(i)"
 							>
@@ -92,8 +91,12 @@
 					<div style="height:57rpx;border-top:1rpx solid #868686;border-bottom:1rpx solid #868686;"></div>
 				</div>
 			</scroll-view>
+			<div v-if="curTab==1&&!list.length" class="flex flex-direction align-center justify-center" style="height:100%;">
+				<image style="width:280rpx;height:280rpx;" src="/static/img/empty.png" alt="">
+				<div style="margin-top:40rpx;">暂无配送订单</div>
+			</div>
 
-			<scroll-view v-if="curTab==2" scroll-y style="height:100%" @scrolltolower="onMore">
+			<scroll-view v-if="curTab==2&&list.length" scroll-y style="height:100%" @scrolltolower="onMore">
 				<div v-for="(i,inx) in list" :key="inx">
 					<div style="padding: 0 20rpx" class="font12">
 						<div class="flex" style="padding: 20rpx 0;">
@@ -128,6 +131,10 @@
 					<div style="height:57rpx;border-top:1rpx solid #868686;border-bottom:1rpx solid #868686;"></div>
 				</div>
 			</scroll-view>
+			<div v-if="curTab==2&&!list.length" class="flex flex-direction align-center justify-center" style="height:100%;">
+				<image style="width:280rpx;height:280rpx;" src="/static/img/empty.png" alt="">
+				<div style="margin-top:40rpx;">暂无配送订单</div>
+			</div>
 		</div>
 
 		<!-- <cover-view v-if="curTab==0" class="action flex" :class="{show:showAction}" >
@@ -219,7 +226,7 @@ export default {
 						this.getOrderList(true)
 						break
 					case 2:
-						
+						this.getOrderList1(true)
 						break
 				}
 			}
@@ -298,7 +305,6 @@ export default {
 			})
 		},
 		onMore() {
-			console.log(1)
 			if (this.isLoading || this.isEnd) {
 				return
 			}
@@ -396,6 +402,31 @@ export default {
 				.finally(_ => {
 					this.isLoading = false
 				})
+		},
+		getOrderList1(reset = false) {
+			if (reset) {
+				this.list = []
+				this.page = 1
+				this.isEnd = false
+			}
+			let d = {
+				page: this.page,
+				type: 'nosend',
+				store_id: 1,
+				order_type: 'delivery'
+			}
+			// this.isLoading = true
+			// this.$get('store/order/index', d)
+			// 	.then(r => {
+			// 		let {data = [], last_page} = r.data.result
+			// 		if (this.page >= last_page) {
+			// 			this.isEnd = true
+			// 		}
+			// 		this.list.push(...data)
+			// 	})
+			// 	.finally(_ => {
+			// 		this.isLoading = false
+			// 	})
 		},
 		onOrder(i) {
 			if (i.status_name == '待配送') {
