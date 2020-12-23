@@ -20,15 +20,49 @@
 		</div>
 	</div>
     </div>
-	<div style="height:40rpx;"></div>
-	<div class="flex align-center" style="background-color: #fff;">
-		<image src="/static/img/msg.png" style="width: 24rpx;height:24rpx;margin-right:12rpx" mode=""></image>
-		<div style="font-size: 12px;font-weight: bold;color: #333;">配送记录</div>
-		<div class="flex-sub"></div>
-		<picker mode="date" @change="onDateChange">
-			<image src="/static/img/search.png" style="width:60rpx;height: 60rpx;"></image>
-		</picker>
-	</div>
+		<div style="height:40rpx;"></div>
+		<div class="flex align-center" style="background-color: #fff;padding:20rpx 30rpx 0">
+			<image src="/static/img/msg.png" style="width: 24rpx;height:24rpx;margin-right:12rpx" mode=""></image>
+			<div style="font-size: 12px;font-weight: bold;color: #333;">配送记录</div>
+			<div class="flex-sub"></div>
+			<picker mode="date" @change="onDateChange">
+				<image src="/static/img/search.png" style="width:60rpx;height: 60rpx;"></image>
+			</picker>
+		</div>
+		<div style="padding:20rpx;color:#A6A6A6;font-size:10px;background:#fff;">{{!date?'全部':date}}</div>
+		<div style="height:20rpx"></div>
+
+		<div class="ship-info bg-white" v-for="(i,index) in list" :key="index">
+      <div>
+        <div class="line flex">
+          <div class="title">配送清单</div>
+          <div class="flex-sub">
+            <div class="flex justify-between in-line" v-for="(j, inx) in i.item" :key="inx">
+              <div>{{j.goods_title}}</div>
+              <div>X {{j.goods_num}}</div>
+            </div>
+          </div>
+        </div>
+        <div class="line flex">
+          <div class="title">配送类型</div>
+          <div class="flex-sub"></div>
+          <div>试试配送</div>
+        </div>
+        <div class="line flex">
+          <div class="title">配送地址</div>
+          <div class="flex-sub"></div>
+          <div>
+            <div>{{i.address}}</div>
+            <div>{{`${i.consignee} ${i.phone}`}}</div>
+          </div>
+        </div>
+        <div class="line flex">
+          <div class="title">配送单号</div>
+          <div class="flex-sub"></div>
+          <div>{{orderInfo.order_sn}}</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -38,22 +72,25 @@ import { mapState } from 'vuex'
 export default {
   onLoad(opt) {
     this.info = JSON.parse(uni.getStorageSync('userInfo')) || {}
-	this.getData()
+		this.getData()
   },
   data() {
     return {
       info: {},
-	  page: 1,
-	  list: [],
-	  isEnd: false,
-	  isLoading: false,
+			page: 1,
+			list: [],
+			isEnd: false,
+			isLoading: false,
+
+			date: '',
     }
   },
   computed: {
   },
   methods: {
     onDateChange(e) {
-		console.log(e.detail.value)
+		this.date = e.detail.value
+		this.getData(true)
 	},
 	getData(reset = false) {
 		if (reset) {
@@ -87,7 +124,7 @@ export default {
 <style>
 	@import "../../colorui/main.css";
 </style>
-<style>
+<style lang="less">
 	.pos-r{
 		position: relative;
 	}
@@ -146,4 +183,30 @@ export default {
 			background-position: 600px top;
 		}
 	}
+
+	.line{
+  margin-top: 16rpx;
+  color: #010101;
+  font-size: 12px;
+  .title{
+    color: #A6A6A6;
+    width: 130rpx;
+	}
+	&:first-child{
+		margin-top: 0;
+	}
+}
+
+.in-line{
+  margin-bottom: 16rpx;
+  &:last-child{
+    margin-bottom: 0;
+  }
+}
+
+.ship-info{
+	padding: 40rpx 100rpx;
+	border-bottom:1rpx solid #A0A0A0;
+	background: #fff;
+}
 </style>
