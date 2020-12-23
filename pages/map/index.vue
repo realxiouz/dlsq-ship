@@ -319,63 +319,92 @@ export default {
 			this.$get('store/order/detail', d)
 				.then(r => {
 					this.orderInfo = r.data
+					uni.getLocation({
+						type: 'gcj02',
+						success: ({latitude, longitude}) => {
+							this.latitude = latitude
+							this.longitude = longitude
+							this.markers = [
+								{
+									latitude,
+									longitude,
+									iconPath: '/static/img/loc0.png',
+									width: 40,
+									height: 40
+								},
+								{
+									latitude: this.orderInfo.latitude || 24.88554,
+									longitude: this.orderInfo.latitude || 102.82147,
+									iconPath: '/static/img/loc1.png',
+									width: 40,
+									height: 40
+								}
+							]
+							this.$nextTick(_ => {
+								this.isShip = true
+								this.$forceUpdate()
+							})
+						},
+						fail: e => {
+							console.log(e)
+							this.$toast('定位失败！请打开GPS后重试！')
+						}
+					})
 				})
 			this.markers = []
 			this.allPoints = []
-			uni.getLocation({
-				type: 'gcj02',
-				success: ({latitude, longitude}) => {
-					this.latitude = latitude
-					this.longitude = longitude
-					console.log(latitude)
-					console.log(longitude)
-					this.markers = [
-						{
-							latitude,
-							longitude,
-							iconPath: '/static/img/loc0.png',
-							width: 40,
-							height: 40
-						},
-						{
-							latitude: 24.88554,
-							longitude: 102.82147,
-							iconPath: '/static/img/loc1.png',
-							width: 40,
-							height: 40
-						}
-					]
-					// this.polyline = [
-					// 	{
-					// 		points: [
-					// 			{latitude, longitude}
-					// 		],
-					// 		color: '#496BA0',
-					// 		width: 4
-					// 	}
-					// ]
+			// uni.getLocation({
+			// 	type: 'gcj02',
+			// 	success: ({latitude, longitude}) => {
+			// 		this.latitude = latitude
+			// 		this.longitude = longitude
+			// 		this.markers = [
+			// 			{
+			// 				latitude,
+			// 				longitude,
+			// 				iconPath: '/static/img/loc0.png',
+			// 				width: 40,
+			// 				height: 40
+			// 			},
+			// 			{
+			// 				latitude: 24.88554,
+			// 				longitude: 102.82147,
+			// 				iconPath: '/static/img/loc1.png',
+			// 				width: 40,
+			// 				height: 40
+			// 			}
+			// 		]
+			// 		// this.polyline = [
+			// 		// 	{
+			// 		// 		points: [
+			// 		// 			{latitude, longitude}
+			// 		// 		],
+			// 		// 		color: '#496BA0',
+			// 		// 		width: 4
+			// 		// 	}
+			// 		// ]
 
-					// this.allPoints = [
-					// 	{
-					// 		latitude,
-					// 		longitude,
-					// 	},
-					// 	{
-					// 		latitude: 24.88554,
-					// 		longitude: 102.82147,
-					// 	}
-					// ]
-					// this.upLoadLocation()
-					this.$nextTick(_ => {
-						this.isShip = true
-						this.$forceUpdate()
-					})
-				},
-				fail: e => {
-					console.log(e)
-					this.$toast('定位失败！请打开GPS后重试！')
-				}
-			})
+			// 		// this.allPoints = [
+			// 		// 	{
+			// 		// 		latitude,
+			// 		// 		longitude,
+			// 		// 	},
+			// 		// 	{
+			// 		// 		latitude: 24.88554,
+			// 		// 		longitude: 102.82147,
+			// 		// 	}
+			// 		// ]
+			// 		// this.upLoadLocation()
+			// 		this.$nextTick(_ => {
+			// 			this.isShip = true
+			// 			this.$forceUpdate()
+			// 		})
+			// 	},
+			// 	fail: e => {
+			// 		console.log(e)
+			// 		this.$toast('定位失败！请打开GPS后重试！')
+			// 	}
+			// })
 			
 		},
 		getOrderList(reset = false) {
