@@ -5,7 +5,7 @@
 			<view class="form-item"><input class="text" type="number" v-model="form.account" placeholder="请输入手机号" /></view>
 			<view class="form-item" style="align-items:center;">
 				<input class="text" :type="showPassword ? 'text' : 'password'" v-model="form.password" placeholder="请输入密码" />
-				<img @click="showPassword=!showPassword" src="/static/img/eye.png" style="width:32rpx;height:32rpx;" alt="">
+				<image @click="showPassword=!showPassword" src="/static/img/eye.png" style="width:32rpx;height:32rpx;" alt="">
 			</view>
 			<div></div>
 			<div class="btn" :class="{ok}" @click="submit">登 录</div>
