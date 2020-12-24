@@ -2,7 +2,7 @@ import {http} from '@/utils/request'
 export default {
   namespaced: true,
   state: {
-    token: 'af703041-7646-4b89-9593-b9cfdb4bc0d3',
+    token: '',
     info: {
       name: '还未登录',
       avatar: 'https://newsirme-fresh.oss-cn-shenzhen.aliyuncs.com/backend/spu/20201103143638.png',
