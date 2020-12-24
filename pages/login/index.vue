@@ -2,13 +2,17 @@
 	<view class="login">
 		<image class="login-img" src="/static/img/logo.png" mode="widthFix" />
 		<view class="form">
-			<view class="form-item"><input class="text" type="text" v-model="form.account" placeholder="请输入手机号" /></view>
-			<view class="form-item">
+			<view class="form-item"><input class="text" type="number" v-model="form.account" placeholder="请输入手机号" /></view>
+			<view class="form-item" style="align-items:center;">
 				<input class="text" :type="showPassword ? 'text' : 'password'" v-model="form.password" placeholder="请输入密码" />
-				<u-icon class="icon" :name="showPassword ? 'eye-fill' : 'eye-off'" @click="showPassword = !showPassword"></u-icon>
+				<img @click="showPassword=!showPassword" src="/static/img/eye.png" style="width:32rpx;height:32rpx;" alt="">
 			</view>
-			<view class="form-item"><view class="btn" @click="submit">登 录</view></view>
-			<!-- <view class="form-info"><u-checkbox v-model="form.checked">下次自动登录</u-checkbox></view> -->
+			<div></div>
+			<div class="btn" :class="{ok}" @click="submit">登 录</div>
+			<div class="flex align-center" style="color:#282828;font-size:10px;" @click="toggleCheck">
+				<div :class="checked?'color-primary icon-check':'icon-uncheck color-gray'" style="font-size:24rpx;margin-right:12rpx"></div>
+				<div>下次自动登录</div>
+			</div>
 		</view>
 	</view>
 </template>
@@ -19,32 +23,21 @@ export default {
 			form: {
 				account: '18687910066',
 				password: '123456',
-				checked: true
 			},
-			showPassword: false
+			showPassword: false,
+			checked: false,
 		};
 	},
 	onLoad() {
 		let user = uni.getStorageSync('userInfo') || {};
 		let autologin = uni.getStorageSync('autologin');
-		// if (user.token && autologin) {
-		// 	this.$go('/pages/map/index', 'switch')
-		// }
+		if (user.token && autologin) {
+			this.$go('/pages/map/index', 'switch')
+		}
 	},
 	methods: {
-		check() {
-			if (this.form.account == '') {
-				this.$toast('请输入用户名')
-				return false;
-			}
-			if (this.form.password == '') {
-        this.$toast('请输入密码！')
-				return false;
-			}
-			return true;
-		},
 		submit() {
-			if (!this.check()) {
+			if (!this.ok) {
 				return;
 			}
 			this.$post('/user/accountLogin', {
@@ -54,88 +47,80 @@ export default {
 				.then(res => {
 					uni.setStorageSync('userInfo', res.data.userinfo);
 					uni.setStorageSync('token', res.data.userinfo.token);
-					uni.setStorageSync('autologin', this.form.checked);
 					this.$go('/pages/map/index', 'switch')
 				}).catch(e => {
 					this.$toast(e)
 				})
+		},
+		toggleCheck() {
+			this.checked = !this.checked
+			uni.setStorageSync('autologin', this.checked)
+		}
+	},
+	computed: {
+		ok() {
+			return /^1\d{10}$/.test(this.form.account) && !!this.form.password
 		}
 	}
 };
 </script>
 
+<style>
+	@import "../../colorui/main.css";
+	@import '../../utils/css/icon.css'
+</style>
 <style lang="less" scoped>
 .login {
+	height: 100vh;
 	width: 100%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: center;
-	padding-top: 180rpx;
-
+	background: #fff;
+	padding-top: 300rpx;
 	.login-img {
 		width: 400rpx;
 		height: 400rpx;
 	}
 
 	.form {
-		width: 660rpx;
+		width: 500rpx;
 	}
 
 	.form-item {
-		padding: 20rpx 0;
+		margin-top: 32rpx;
+		padding: 16rpx 0;
 		position: relative;
 		display: flex;
-
-		.text,
-		.btn {
-			flex: 1;
-			height: 86rpx;
-			line-height: 86rpx;
-			border: 1px solid #ccc;
-			border-radius: 16rpx;
-			background: none;
-			outline: none;
-		}
-
+		border-bottom: 1rpx solid #b1b1b1;
 		.text {
-			padding: 0 30rpx;
+			padding: 0 12rpx;
 			font-size: 28rpx;
-		}
-
-		.btn {
-			text-align: center;
-			font-size: 32rpx;
-		}
-
-		.icon {
-			position: absolute;
-			padding: 26rpx;
-			right: 0;
-			top: 50%;
-			transform: translateY(-50%);
-			font-size: 40rpx;
-			color: #999;
+			flex: 1;
 		}
 	}
 
-	.form-info {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-
-		.-r {
-			font-size: 26rpx;
-
-			text:nth-child(2) {
-				margin: 0 12rpx;
-			}
+	.btn{
+		font-size: 14px;
+		line-height: 66rpx;
+		height: 68rpx;
+		box-sizing:border-box;
+		text-align: center;
+		border-radius: 10rpx;
+		color: #4C4C4C;
+		background: #f4f4f4;
+		border: 1rpx solid #dbdbdb;
+		margin-bottom: 20rpx;
+		margin-top: 50rpx;
+		&.ok{
+			background: #5077a9;
+			color: #fff;
+			border-color: #5077a9;;
 		}
 	}
 
-	.u-btn--default {
-		background: none !important;
-		border-color: #cccccc !important;
+	.color-primary{
+		color: #5077a9;
 	}
 }
 </style>

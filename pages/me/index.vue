@@ -98,7 +98,7 @@ import dayjs from 'dayjs'
 
 export default {
   onLoad(opt) {
-    this.info = JSON.parse(uni.getStorageSync('userInfo')) || {}
+    this.info = uni.getStorageSync('userInfo') || {}
 		this.getData()
   },
   data() {
