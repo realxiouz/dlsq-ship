@@ -56,7 +56,9 @@ export default {
 					uni.setStorageSync('token', res.data.userinfo.token);
 					uni.setStorageSync('autologin', this.form.checked);
 					this.$go('/pages/map/index', 'switch')
-				});
+				}).catch(e => {
+					this.$toast(e)
+				})
 		}
 	}
 };

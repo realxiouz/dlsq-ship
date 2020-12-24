@@ -237,7 +237,6 @@ export default {
 					uni.getLocation({
 						type: 'gcj02',
 						success: ({latitude, longitude}) => {
-							this.$toast(`${latitude},${longitude}`)
 							this.polyline[0].points.push({
 								latitude,
 								longitude
