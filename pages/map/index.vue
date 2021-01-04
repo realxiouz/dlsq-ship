@@ -6,22 +6,6 @@
 				<div style="line-height:40rpx;">{{i.title}}</div>
 				<div class="sj" v-if="inx==curTab"></div>
 			</div>
-			<!-- <div class="flex flex-direction align-center" @click.stop="toggleTab(0)" style="color:#fff;font-size:8px;">
-				<image style="width:60rpx;height:60rpx;margin-top:14rpx" src="../../static/img/nav0.png" alt="">
-				<div style="line-height:40rpx;">正在配送</div>
-				<div class="sj" v-if="0==curTab"></div>
-			</div>
-			<div class="flex flex-direction align-center" @click.stop="toggleTab(1)" style="color:#fff;font-size:8px;">
-				<image style="width:60rpx;height:60rpx;margin-top:14rpx" src="../../static/img/nav1.png" alt="">
-				<div style="line-height:40rpx;">实时订单</div>
-				<div class="sj" v-if="1==curTab"></div>
-			</div>
-			<div class="flex flex-direction align-center" @click.stop="toggleTab(2)" style="color:#fff;font-size:8px;">
-				<image style="width:60rpx;height:60rpx;margin-top:14rpx" src="../../static/img/nav2.png" alt="">
-				<div style="line-height:40rpx;">预约订单</div>
-				<div class="sj" v-if="2==curTab"></div>
-			</div> -->
-			
 		</div>
 		
 		<div class="main-content" :style="{height: `calc(100vh - ${h}px)`}">
@@ -58,8 +42,7 @@
 				<div v-for="(i,inx) in list" :key="inx">
 					<div style="padding: 0 20rpx" class="font12">
 						<div class="flex" style="padding: 20rpx 0;">
-							<div><span class="text-bold">配送信息：</span>{{'xx毫升桶装水  2桶'}}</div>
-							<div class="flex-sub"></div>
+							<div class="flex-sub" style="margin-right:8rpx;"><span class="text-bold">配送信息：</span>{{getGoodsDesc(i.item)}}</div>
 							<div><span class="text-bold">状态：</span>{{i.status_name}}</div>
 						</div>
 						<div class="flex align-center" style="margin-bottom:20rpx;">
@@ -414,7 +397,7 @@ export default {
 			}
 			let d = {
 				page: this.page,
-				type: 'nosend',
+				type: 'all', // 'nosend',
 				store_id: 1,
 				order_type: 'delivery'
 			}
@@ -506,6 +489,9 @@ export default {
 						}
 					})
 			}
+		},
+		getGoodsDesc(arr) {
+			return arr.map(i => `${i.goods_title} * ${i.goods_num}`).join(',')
 		}
 	}
 }
