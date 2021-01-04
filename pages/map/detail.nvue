@@ -14,8 +14,7 @@
 		</div>
 		<div class="mb">
 			<text class="bold">配送信息:</text>
-			<text>{{info.item[0].goods_title}},</text>
-			<text>{{info.item[0].goods_num}}个</text>
+			<text>{{getGoodsDesc(info.item)}}</text>
 		</div>
 	</div>
 </template>
@@ -25,8 +24,6 @@ export default {
 	mounted() {
 		uni.$on('info', info => {
 			this.info = info
-			console.log(info)
-			console.log(this.info)
 		})
 	},
 	data() {
@@ -37,6 +34,9 @@ export default {
 	methods: {
 		doClose() {
 			uni.$emit('close')
+		},
+		getGoodsDesc(arr) {
+			return arr.map(i => `${i.goods_title} * ${i.goods_num}`).join(',')
 		}
 	}
 }
@@ -45,7 +45,7 @@ export default {
 <style>
 .wrap{
 	padding: 10px 6px 0 6rpx;
-	font-size: 12px;
+	font-size: 10px;
 	background-color: #FFCE5E;
 }
 .bold{

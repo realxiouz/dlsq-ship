@@ -64,10 +64,12 @@
 							<image src="/static/img/location.png" style="width:24rpx;height:24rpx;margin-right:8rpx;" alt="">
 							<div class="text-bold">地址: </div>
 							<div class="flex-sub" style="width: 0;">{{i.address}}</div>
-							<div style="line-height:34rpx;border-radius:17rpx;width:120rpx;background:#FFCE50;text-align:center;font-size:10px;"
+							<div
+								style="line-height:34rpx;border-radius:17rpx;width:120rpx;background:#FFCE50;text-align:center;font-size:10px;"
+								:style="{background:i.status_name == '待配送'?'#FFCE50':'#5677AB', color:i.status_name == '待配送'?'#000':'#fff'}"
 								@click="onOrder(i)"
 							>
-								{{i.status_name == '待配送' ? '开始配送' : '完成配送'}}
+								{{i.status_name == '待配送' ? '开始配送' : '查看详情'}}
 							</div>
 						</div>
 					</div>
@@ -203,7 +205,7 @@ export default {
 				this.curTab = inx
 				switch(this.curTab) {
 					case 0:
-						this.getShippingData()
+						// this.getShippingData()
 						break
 					case 1:
 						this.getOrderList(true)
@@ -212,6 +214,7 @@ export default {
 						this.getOrderList1(true)
 						break
 				}
+				this.subNVue.hide()
 			}
 		},
 		upLoadLocation() {
@@ -228,7 +231,7 @@ export default {
 							let d = {
 								lat: latitude,
 								lng: longitude,
-								store_id: 1,
+								// store_id: 1,
 								order_id: this.orderId,
 							}
 							this.$post('store/store/location', d)
@@ -270,11 +273,11 @@ export default {
 		stopLoc() {
 			this.$showModal({
 				title: '完成配送',
-				content: `完成时间: ${dayjs(new Date()).format('YYYY-MM-DD hh:ss')}`,
+				content: `订单${this.orderInfo.order_sn}已完成.完成时间: ${dayjs(new Date()).format('YYYY-MM-DD hh:ss')}`,
 				showCancel: true,
 				successCb: _ => {
 					this.$put('store/order/confirm', {
-						store_id: 1,
+						// store_id: 1,
 						id: this.orderId
 					}).then(r => {
 						this.isShip = false
@@ -296,7 +299,7 @@ export default {
 		mockShip() {
 			let d = {
 				id: this.orderId,
-				store_id: 1
+				// store_id: 1
 			}
 			this.$get('store/order/detail', d)
 				.then(r => {
@@ -316,7 +319,7 @@ export default {
 								},
 								{
 									latitude: this.orderInfo.latitude || 24.88554,
-									longitude: this.orderInfo.latitude || 102.82147,
+									longitude: this.orderInfo.longitude || 102.82147,
 									iconPath: '/static/img/loc1.png',
 									width: 40,
 									height: 40
@@ -398,7 +401,7 @@ export default {
 			let d = {
 				page: this.page,
 				type: 'all', // 'nosend',
-				store_id: 1,
+				// store_id: 1,
 				order_type: 'delivery'
 			}
 			this.isLoading = true
@@ -423,7 +426,7 @@ export default {
 			let d = {
 				page: this.page,
 				type: 'nosend',
-				store_id: 1,
+				// store_id: 1,
 				order_type: 'delivery'
 			}
 			// this.isLoading = true
@@ -441,25 +444,23 @@ export default {
 		},
 		onOrder(i) {
 			if (i.status_name == '待配送') {
-				if (this.isShip) {
-					this.$toast('当前还有订单配送中,必须完成订单才能重新配送~~~')
-					return
-				}
+				// if (this.isShip) {
+				// 	this.$toast('当前还有订单配送中,必须完成订单才能重新配送~~~')
+				// 	return
+				// }
 				this.$showModal({
 					content: '确定开始配送么?',
 					showCancel: true,
 					successCb: _ => {
 						let d = {
-							store_id: '1',
+							// store_id: '1',
 							id: i.id
 						}
 						this.$put('store/order/send', d)
 							.then(r => {
 								this.orderId = i.id
-								this.mockShip()
-
-								this.upLoadLocation()
-
+								// this.mockShip()
+								// this.upLoadLocation()
 								this.$showModal({
 									content: '开始配送~~~',
 									successCb: _ => {
@@ -469,14 +470,17 @@ export default {
 							})
 					}
 				})
+			} else {
+				this.orderId = i.id
+				this.toggleTab(0)
 			}
 		},
 		getShippingData() {
-			if (!this.isShip) {
+			if (!this.isShip || true) {
 				let d = {
 					page: 1,
 					type: 'noget',
-					store_id: 1,
+					// store_id: 1,
 					order_type: 'delivery'
 				}
 				this.$get('store/order/index', d)
@@ -484,14 +488,23 @@ export default {
 						let { data=[] } = r.data.result
 						if (data.length) {
 							this.orderId = data[0].id
-							this.mockShip()
-							this.upLoadLocation()
+							// this.mockShip()
+							// this.upLoadLocation()
 						}
 					})
 			}
 		},
 		getGoodsDesc(arr) {
 			return arr.map(i => `${i.goods_title} * ${i.goods_num}`).join(',')
+		}
+	},
+	watch: {
+		orderId: {
+			handler(val){
+				console.log('---order change---')
+				this.mockShip()
+				this.upLoadLocation()
+			}
 		}
 	}
 }

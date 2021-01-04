@@ -21,8 +21,8 @@ export default {
 	data() {
 		return {
 			form: {
-				account: '18687910066',
-				password: '123456',
+				account: '',
+				password: '',
 			},
 			showPassword: false,
 			checked: false,
