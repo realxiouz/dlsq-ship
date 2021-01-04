@@ -85,30 +85,29 @@
 				<div v-for="(i,inx) in list" :key="inx">
 					<div style="padding: 0 20rpx" class="font12">
 						<div class="flex" style="padding: 20rpx 0;">
-							<div><span class="text-bold">配送信息：</span>{{'xx毫升桶装水  2桶'}}</div>
+							<div><span class="text-bold">配送信息：</span>{{getGoodsDesc(i.item)}}</div>
 							<div class="flex-sub"></div>
-							<div><span class="text-bold">送达时间：</span>{{'明日12点'}}</div>
+							<div><span class="text-bold">送达时间：</span>{{getExpTime(i.item)}}</div>
 						</div>
 						<div class="flex align-center" style="margin-bottom:20rpx;">
 							<image src="/static/img/no.png" style="width:24rpx;height:24rpx;margin-right:8rpx;" alt="">
 							<div class="text-bold">订单号：</div>
-							<div>{{'02549845612587'}}</div>
+							<div>{{i.order_sn}}</div>
 						</div>
 						<div class="flex align-center" style="margin-bottom:20rpx;">
 							<image src="/static/img/no.png" style="width:24rpx;height:24rpx;margin-right:8rpx;" alt="">
 							<div class="text-bold">收货人：</div>
-							<div>{{'02549845612587'}}</div>
+							<div>{{i.consignee}}</div>
 						</div>
 						<div class="flex align-center" style="margin-bottom:20rpx;">
 							<image src="/static/img/phone.png" style="width:24rpx;height:24rpx;margin-right:8rpx;" alt="">
 							<div class="text-bold">电话：</div>
-							<div>{{'02549845612587'}}</div>
+							<div>{{i.phone}}</div>
 						</div>
 						<div class="flex align-center" style="margin-bottom:20rpx;">
 							<image src="/static/img/location.png" style="width:24rpx;height:24rpx;margin-right:8rpx;" alt="">
 							<div class="text-bold">地址: </div>
-							<div>{{'02549845612587'}}</div>
-							<div class="flex-sub"></div>
+							<div class="flex-sub" style="width: 0;">{{i.address}}</div>
 							<image src="/static/img/clock.png" style="width:28rpx;height:28rpx;margin-right:8rpx;" alt="">
 							<div>开启提醒</div>
 						</div>
@@ -211,7 +210,7 @@ export default {
 						this.getOrderList(true)
 						break
 					case 2:
-						this.getOrderList1(true)
+						this.getOrderList(true)
 						break
 				}
 				this.subNVue.hide()
@@ -400,9 +399,10 @@ export default {
 			}
 			let d = {
 				page: this.page,
-				type: 'all', // 'nosend',
+				type: 'noconfirm', // 'nosend',
 				// store_id: 1,
-				order_type: 'delivery'
+				order_type: 'delivery',
+				reservation: this.curTab - 1,
 			}
 			this.isLoading = true
 			this.$get('store/order/index', d)
@@ -496,14 +496,19 @@ export default {
 		},
 		getGoodsDesc(arr) {
 			return arr.map(i => `${i.goods_title} * ${i.goods_num}`).join(',')
+		},
+		getExpTime(arr) {
+			return dayjs(arr[0].ext_arr.dispatch_date).format('MM-DD hh:ss')
 		}
 	},
 	watch: {
 		orderId: {
 			handler(val){
-				console.log('---order change---')
-				this.mockShip()
-				this.upLoadLocation()
+				if (val) {
+					console.log('---order change---')
+					this.mockShip()
+					this.upLoadLocation()
+				}
 			}
 		}
 	}
