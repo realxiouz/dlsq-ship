@@ -51,6 +51,11 @@
 							<div>{{i.order_sn}}</div>
 						</div>
 						<div class="flex align-center" style="margin-bottom:20rpx;">
+							<image src="/static/img/clock.png" style="width:24rpx;height:24rpx;margin-right:8rpx;" alt="">
+							<div class="text-bold">下单时间：</div>
+							<div>{{i.createtime}}</div>
+						</div>
+						<div class="flex align-center" style="margin-bottom:20rpx;">
 							<image src="/static/img/no.png" style="width:24rpx;height:24rpx;margin-right:8rpx;" alt="">
 							<div class="text-bold">收货人：</div>
 							<div>{{i.consignee}}</div>
@@ -95,6 +100,11 @@
 							<div>{{i.order_sn}}</div>
 						</div>
 						<div class="flex align-center" style="margin-bottom:20rpx;">
+							<image src="/static/img/clock.png" style="width:24rpx;height:24rpx;margin-right:8rpx;" alt="">
+							<div class="text-bold">下单时间：</div>
+							<div>{{i.createtime}}</div>
+						</div>
+						<div class="flex align-center" style="margin-bottom:20rpx;">
 							<image src="/static/img/no.png" style="width:24rpx;height:24rpx;margin-right:8rpx;" alt="">
 							<div class="text-bold">收货人：</div>
 							<div>{{i.consignee}}</div>
@@ -110,6 +120,16 @@
 							<div class="flex-sub" style="width: 0;">{{i.address}}</div>
 							<image src="/static/img/clock.png" style="width:28rpx;height:28rpx;margin-right:8rpx;" alt="">
 							<div>开启提醒</div>
+						</div>
+						<div class="flex align-center" style="margin-bottom:20rpx;" v-if="show(i.item)">
+							<div class="flex-sub" style="width: 0;"></div>
+							<div
+								style="line-height:34rpx;border-radius:17rpx;width:120rpx;background:#FFCE50;text-align:center;font-size:10px;"
+								:style="{background:i.status_name == '待配送'?'#FFCE50':'#5677AB', color:i.status_name == '待配送'?'#000':'#fff'}"
+								@click="onOrder(i)"
+							>
+								{{i.status_name == '待配送' ? '开始配送' : '查看详情'}}
+							</div>
 						</div>
 					</div>
 					<div style="height:57rpx;border-top:1rpx solid #868686;border-bottom:1rpx solid #868686;"></div>
@@ -417,31 +437,6 @@ export default {
 					this.isLoading = false
 				})
 		},
-		getOrderList1(reset = false) {
-			if (reset) {
-				this.list = []
-				this.page = 1
-				this.isEnd = false
-			}
-			let d = {
-				page: this.page,
-				type: 'nosend',
-				// store_id: 1,
-				order_type: 'delivery'
-			}
-			// this.isLoading = true
-			// this.$get('store/order/index', d)
-			// 	.then(r => {
-			// 		let {data = [], last_page} = r.data.result
-			// 		if (this.page >= last_page) {
-			// 			this.isEnd = true
-			// 		}
-			// 		this.list.push(...data)
-			// 	})
-			// 	.finally(_ => {
-			// 		this.isLoading = false
-			// 	})
-		},
 		onOrder(i) {
 			if (i.status_name == '待配送') {
 				// if (this.isShip) {
@@ -499,6 +494,11 @@ export default {
 		},
 		getExpTime(arr) {
 			return dayjs(arr[0].ext_arr.dispatch_date).format('MM-DD hh:ss')
+		},
+		show(arr) {
+			let newDate = dayjs().add(1, 'day')
+			let str = `${newDate.year()}-${newDate.month()+1}-${newDate.date()} 00:00`
+			return dayjs(arr[0].ext_arr.dispatch_date).valueOf() < dayjs(str).valueOf()
 		}
 	},
 	watch: {
