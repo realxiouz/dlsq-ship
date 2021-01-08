@@ -1,20 +1,20 @@
 <template>
 	<div class="wrap" @click="doClose">
 		<div class="mb">
-			<text class="bold">订单号:</text>
-			<text>{{info.order_sn}}</text>
+			<!-- <text class="bold" style="font-size: 10px;">订单号:</text> -->
+			<text style="font-size: 10px;">订单号:{{info.order_sn}}</text>
 		</div>
 		<div class="mb">
-			<text class="bold">收货人:</text>
-			<text>{{info.consignee}}</text>
+			<!-- <text class="bold" style="font-size: 10px;">收货人:</text> -->
+			<text style="font-size: 10px;">收货人:{{info.consignee}}</text>
 		</div>
 		<div class="mb">
-			<text class="bold">地址:</text>
-			<text>{{info.address}}</text>
+			<!-- <text class="bold" style="font-size: 10px;">地址:</text> -->
+			<text style="font-size: 10px;">地址:{{info.address}}</text>
 		</div>
 		<div class="mb">
-			<text class="bold">配送信息:</text>
-			<text>{{getGoodsDesc(info.item)}}</text>
+			<!-- <text class="bold" style="font-size: 10px;">配送信息:</text> -->
+			<text style="font-size: 10px;">配送信息:{{getGoodsDesc(info.item)}}</text>
 		</div>
 	</div>
 </template>
@@ -53,7 +53,6 @@ export default {
 }
 .mb{
 	margin-bottom: 6rpx;
-	display: flex;
-	flex-direction: row;
+	flex-direction: 'row';
 }
 </style>
