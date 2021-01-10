@@ -1,1 +1,1 @@
-export const BASE_URL = 'https://xzj.csywlkj.com/api/shop'
+export const BASE_URL = 'https://yunnanxinzijia.com/api/shop'
