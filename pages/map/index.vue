@@ -18,6 +18,7 @@
 					:longitude="longitude"
 					:include-points="allPoints"
 					style="width:100%;"
+					@markertap="onMark"
 				></map>
 				<div style="height:100rpx;background:#5077a8;color:#fff;" class="flex font12">
 					<div class="flex-sub flex flex-direction align-center justify-center" @click="onAction(0)">
@@ -330,6 +331,7 @@ export default {
 							this.longitude = longitude
 							this.markers = [
 								{
+									id: 0,
 									latitude,
 									longitude,
 									iconPath: '/static/img/loc0.png',
@@ -337,6 +339,7 @@ export default {
 									height: 40
 								},
 								{
+									id: 1,
 									latitude: this.orderInfo.latitude || 24.88554,
 									longitude: this.orderInfo.longitude || 102.82147,
 									iconPath: '/static/img/loc1.png',
@@ -499,6 +502,58 @@ export default {
 			let newDate = dayjs().add(1, 'day')
 			let str = `${newDate.year()}-${newDate.month()+1}-${newDate.date()} 00:00`
 			return dayjs(arr[0].ext_arr.dispatch_date).valueOf() < dayjs(str).valueOf()
+		},
+		onMark(e) {
+			console.log(e)
+			let inx = e.detail.markerId
+			// plus.nativeUI.alert(inx);
+			if (inx==1) {
+				this.openMap(
+					this.markers[inx].latitude,
+					this.markers[inx].longitude,
+					'目的地'
+				)
+			}
+		},
+		openMap(latitude,longitude,name) {
+			let hasBaiduMap = plus.runtime.isApplicationExist({
+					pname: 'com.baidu.BaiduMap',
+					action: 'baidumap://'
+			});
+			let hasAmap = plus.runtime.isApplicationExist({
+					pname: 'com.autonavi.minimap',
+					action: 'androidamap://'
+			});
+			let urlBaiduMap = `baidumap://map/marker?location=${latitude},${longitude}&title=${name}&coord_type=gcj02&src=andr.baidu.openAPIdemo`
+			// urlBaiduMap = encodeURI(urlBaiduMap)
+			let urlAmap = `androidamap://viewMap?sourceApplication=appname&poiname=${name}&lat=${latitude}&lon=${longitude}&dev=0`
+			if (hasAmap && hasBaiduMap) {
+					plus.nativeUI.actionSheet({
+							title: "选择地图应用",
+							cancel: "取消",
+							buttons: [{
+									title: "百度地图"
+							}, {
+									title: "高德地图"
+							}]
+					}, function(e) {
+							switch (e.index) {
+									case 1:
+											plus.runtime.openURL(urlBaiduMap);
+											break;
+									case 2:
+											plus.runtime.openURL(urlAmap);
+											break;
+							}
+					})
+			} else if (hasAmap) {
+					plus.runtime.openURL(urlAmap);
+			} else if (hasBaiduMap) {
+					plus.runtime.openURL(urlBaiduMap);
+			} else {
+					plus.nativeUI.alert("本机未安装指定的地图应用");
+			}
+
 		}
 	},
 	watch: {
