@@ -18,8 +18,11 @@
 					:longitude="longitude"
 					:include-points="allPoints"
 					style="width:100%;"
+					
 					@markertap="onMark"
-				></map>
+				>
+					<cover-image src="/static/img/zd.png" style="position: absolute;width: 100rpx;height: 100rpx;right: 60rpx;top: 60rpx;" @click="onZd"></cover-image>
+				</map>
 				<div style="height:100rpx;background:#5077a8;color:#fff;" class="flex font12">
 					<div class="flex-sub flex flex-direction align-center justify-center" @click="onAction(0)">
 						<image src="../../static/img/a0.png" style="width:48rpx;height:48rpx;margin-bottom:6rpx;" />
@@ -554,6 +557,20 @@ export default {
 					plus.nativeUI.alert("本机未安装指定的地图应用");
 			}
 
+		},
+		onZd() {
+			plus.nativeUI.actionSheet({
+				title: "选择转单对象",
+				cancel: "取消",
+				buttons: [
+					{ title: '喵爷a'},
+					{ title: '喵爷b'},
+					{ title: '喵爷c'},
+					{ title: '喵爷d'},
+				]
+			}, e => {
+				plus.nativeUI.alert(e.index)
+			})
 		}
 	},
 	watch: {
