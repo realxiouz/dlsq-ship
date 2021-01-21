@@ -21,6 +21,26 @@
 					// #endif		
 				}
 			})
+
+			// #ifdef APP-PLUS  
+			const _handlePushClick = message => {  
+					// 自行处理消息点击事件  
+					let {payload} = message;  
+					console.log( message );
+					this.$showModal({
+						content: message
+					}) 
+			};  
+			const _handlePushReceive = message => {  
+					// 消息接收事件，手动创造本地通知信息  
+					plus.push.createMessage(message.content, message.payload, {  
+							title: message.title  
+					})  
+			};  
+			plus.push.addEventListener('click', _handlePushClick);    
+			plus.push.addEventListener('receive', _handlePushReceive);    
+			// APPUpdate();  
+			// #endif
 		},
 		onShow: function() {
 			console.log('App Show')

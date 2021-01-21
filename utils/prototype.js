@@ -142,19 +142,24 @@ Vue.prototype.$showModal = ({
   title = '温馨提示',
   content,
   successCb,
+  failCb = null,
   showCancel = false,
   confirmText = '确定',
+  cancelText = '取消'
 }) => {
   uni.showModal({
     title,
     content,
     showCancel,
     confirmText,
+	cancelText,
     success: (r) => {
       if (r.confirm && successCb) {
         successCb()
-      }
-    },
+      } else if (r.cancel && failCb) {
+		  failCb()
+	  }
+    }
   })
 }
 
