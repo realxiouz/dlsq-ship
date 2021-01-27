@@ -42,7 +42,13 @@
 				<image style="width:280rpx;height:280rpx;" src="/static/img/empty.png" alt="">
 				<div style="margin-top:40rpx;">暂无配送订单</div>
 			</div>
-			<scroll-view v-if="curTab==1&&list.length" scroll-y style="height:100%" @scrolltolower="onMore">
+
+			<div v-if="curTab!=0" style="height:75rpx;border-bottom:1rpx solid #5d5e5f;" class="flex align-center">
+				<div class="flex-sub text-center" style="line-height:74rpx;font-size:14px;" :style="{color:curSubTab==0?'#5077a8':'#5d5e5f'}" @click="toggleSub(0)">配送中</div>
+				<div style="height:66rpx;width:1rpx;background:#5d5e5f"></div>
+				<div class="flex-sub text-center" style="line-height:74rpx;font-size:14px;" :style="{color:curSubTab==1?'#5077a8':'#5d5e5f'}" @click="toggleSub(1)">待配送</div>
+			</div>
+			<scroll-view v-if="curTab==1&&list.length" scroll-y :style="{height: `calc(100vh - ${h1}px)`}" @scrolltolower="onMore">
 				<div v-for="(i,inx) in list" :key="inx">
 					<div style="padding: 0 20rpx" class="font12">
 						<div class="flex" style="padding: 20rpx 0;">
@@ -85,12 +91,12 @@
 					<div style="height:57rpx;border-top:1rpx solid #868686;border-bottom:1rpx solid #868686;"></div>
 				</div>
 			</scroll-view>
-			<div v-if="curTab==1&&!list.length" class="flex flex-direction align-center justify-center" style="height:100%;">
+			<div v-if="curTab==1&&!list.length" class="flex flex-direction align-center justify-center" :style="{height: `calc(100vh - ${h1}px)`}">
 				<image style="width:280rpx;height:280rpx;" src="/static/img/empty.png" alt="">
 				<div style="margin-top:40rpx;">暂无配送订单</div>
 			</div>
 
-			<scroll-view v-if="curTab==2&&list.length" scroll-y style="height:100%" @scrolltolower="onMore">
+			<scroll-view v-if="curTab==2&&list.length" scroll-y :style="{height: `calc(100vh - ${h1}px)`}" @scrolltolower="onMore">
 				<div v-for="(i,inx) in list" :key="inx">
 					<div style="padding: 0 20rpx" class="font12">
 						<div class="flex" style="padding: 20rpx 0;">
@@ -139,33 +145,18 @@
 					<div style="height:57rpx;border-top:1rpx solid #868686;border-bottom:1rpx solid #868686;"></div>
 				</div>
 			</scroll-view>
-			<div v-if="curTab==2&&!list.length" class="flex flex-direction align-center justify-center" style="height:100%;">
+			<div v-if="curTab==2&&!list.length" class="flex flex-direction align-center justify-center" :style="{height: `calc(100vh - ${h1}px)`}">
 				<image style="width:280rpx;height:280rpx;" src="/static/img/empty.png" alt="">
 				<div style="margin-top:40rpx;">暂无配送订单</div>
 			</div>
 		</div>
-
-		<!-- <cover-view v-if="curTab==0" class="action flex" :class="{show:showAction}" >
-			<cover-view class="flex-sub flex flex-direction align-center justify-center" @click="onAction(0)">
-				<cover-image src="/static/img/a0.png" style="width:48rpx;height:48rpx;margin-bottom:6rpx;" />
-				<cover-view>完成配送</cover-view>
-			</cover-view>
-			<cover-view class="flex-sub flex flex-direction align-center justify-center" @click="onAction(1)">
-				<cover-image src="/static/img/a1.png" style="width:48rpx;height:48rpx;margin-bottom:6rpx;" />
-				<cover-view>联系对方</cover-view>
-			</cover-view>
-			<cover-view class="flex-sub flex flex-direction align-center justify-center" @click="onAction(2)">
-				<cover-image src="/static/img/a2.png" style="width:48rpx;height:48rpx;margin-bottom:6rpx;" />
-				<cover-view>订单信息</cover-view>
-			</cover-view>
-			<cover-view style="width:100rpx;" @click.stop="showAction=!showAction"></cover-view>
-		</cover-view> -->
 	</div>
 </template>
 
 <script>
 import dayjs from 'dayjs'
 let h = uni.upx2px(125)
+let h1 = uni.upx2px(200)
 const INTERVER = 10
 const TABS = [
 	{
@@ -211,6 +202,7 @@ export default {
 			tabs: TABS,
 			showAction: true,
 			h,
+			h1,
 
 			timer: null,
 
@@ -221,7 +213,9 @@ export default {
 			},
 			subNVue: null,
 
-			allStore: []
+			allStore: [],
+
+			curSubTab: 0,
 		}
 	},
 	methods: {
@@ -432,8 +426,7 @@ export default {
 			}
 			let d = {
 				page: this.page,
-				type: 'noconfirm', // 'nosend',
-				// store_id: 1,
+				type: this.curSubTab == 0 ? 'noget':'nosend',  // 'noconfirm', // 'nosend',
 				order_type: 'delivery',
 				reservation: this.curTab - 1,
 			}
@@ -642,6 +635,10 @@ export default {
 
 				})
 			
+		},
+		toggleSub(inx) {
+			this.curSubTab = inx
+			this.getOrderList(true)
 		}
 	},
 	watch: {
