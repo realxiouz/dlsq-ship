@@ -568,40 +568,6 @@ export default {
 				.then(r => {
 					this.allStore = r.data
 					if (this.allStore.length) {
-						// #ifdef APP-PLUS
-						plus.nativeUI.actionSheet({
-							title: "选择转单对象",
-							cancel: "取消",
-							buttons: this.allStore.map(i => ({
-								title: i.name + '-' + i.realname,
-							}))
-						}, e => {
-							let o = this.allStore[e.index]
-							this.$showModal({
-								content: `确定要转单给${o.name}-${o.realname}?`,
-								showCancel: true,
-								confirmText: '取消',
-								cancelText: '确定',
-								successCb: _ => {
-									
-								},
-								failCb: _ => {
-									this.$put('store/store/transfer', {
-										store_id: o.id,
-										order_id: this.orderId
-									})
-										.then(r => {
-											this.isShip = false
-											this.timer && clearInterval(this.timer)
-											this.timer = null
-											this.orderId = null
-											this.$toast('配送完成~~~')
-										})
-								}
-							})
-						})
-						// #endif
-						// #ifdef MP-WEIXIN
 						wx.showActionSheet({
 							itemList: this.allStore.map(i => i.name + '-' + i.realname),
 							success: e => {
@@ -609,7 +575,9 @@ export default {
 								this.$showModal({
 									content: `确定要转单给${o.name}-${o.realname}?`,
 									showCancel: true,
-									successCb: _ => {
+									confirmText: '取消',
+									cancelText: '确定',
+									failCb: _ => {
 										this.$put('store/store/transfer', {
 											store_id: o.id,
 											order_id: this.orderId
@@ -628,7 +596,67 @@ export default {
 								console.log(res.errMsg)
 							}
 						})
-						// #endif
+						// // #ifdef APP-PLUS
+						// plus.nativeUI.actionSheet({
+						// 	title: "选择转单对象",
+						// 	cancel: "取消",
+						// 	buttons: this.allStore.map(i => ({
+						// 		title: i.name + '-' + i.realname,
+						// 	}))
+						// }, e => {
+						// 	let o = this.allStore[e.index]
+						// 	this.$showModal({
+						// 		content: `确定要转单给${o.name}-${o.realname}?`,
+						// 		showCancel: true,
+						// 		confirmText: '取消',
+						// 		cancelText: '确定',
+						// 		successCb: _ => {
+									
+						// 		},
+						// 		failCb: _ => {
+						// 			this.$put('store/store/transfer', {
+						// 				store_id: o.id,
+						// 				order_id: this.orderId
+						// 			})
+						// 				.then(r => {
+						// 					this.isShip = false
+						// 					this.timer && clearInterval(this.timer)
+						// 					this.timer = null
+						// 					this.orderId = null
+						// 					this.$toast('配送完成~~~')
+						// 				})
+						// 		}
+						// 	})
+						// })
+						// // #endif
+						// // #ifdef MP-WEIXIN
+						// wx.showActionSheet({
+						// 	itemList: this.allStore.map(i => i.name + '-' + i.realname),
+						// 	success: e => {
+						// 		let o = this.allStore[e.tapIndex]
+						// 		this.$showModal({
+						// 			content: `确定要转单给${o.name}-${o.realname}?`,
+						// 			showCancel: true,
+						// 			successCb: _ => {
+						// 				this.$put('store/store/transfer', {
+						// 					store_id: o.id,
+						// 					order_id: this.orderId
+						// 				})
+						// 					.then(r => {
+						// 						this.isShip = false
+						// 						this.timer && clearInterval(this.timer)
+						// 						this.timer = null
+						// 						this.orderId = null
+						// 						this.$toast('配送完成~~~')
+						// 					})
+						// 			}
+						// 		})
+						// 	},
+						// 	fail (res) {
+						// 		console.log(res.errMsg)
+						// 	}
+						// })
+						// // #endif
 					}
 				})
 				.catch(e => {
