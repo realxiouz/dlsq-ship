@@ -9,6 +9,7 @@
 			</view>
 			<div></div>
 			<div class="btn" :class="{ok}" @click="submit">登 录</div>
+			<div class="btn" :class="{ok}" @click="onClient">获取clientid</div>
 			<div class="flex align-center" style="color:#282828;font-size:10px;" @click="toggleCheck">
 				<div :class="checked?'color-primary icon-check':'icon-uncheck color-gray'" style="font-size:24rpx;margin-right:12rpx"></div>
 				<div>下次自动登录</div>
@@ -40,9 +41,13 @@ export default {
 			if (!this.ok) {
 				return;
 			}
+			let info = plus.push.getClientInfo();
+			let clientid = info?.clientid;
+			console.log(clientid)
 			this.$post('/user/accountLogin', {
 					account: this.form.account,
-					password: this.form.password
+					password: this.form.password,
+					clientid,
 				})
 				.then(res => {
 					uni.setStorageSync('userInfo', res.data.userinfo);
@@ -55,6 +60,14 @@ export default {
 		toggleCheck() {
 			this.checked = !this.checked
 			uni.setStorageSync('autologin', this.checked)
+		},
+		onClient() {
+			let info = plus.push.getClientInfo();
+			if (info) {
+				plus.nativeUI.alert(info?.clientid)
+			} else {
+				plus.nativeUI.alert(JSON.stringify(info))
+			}
 		}
 	},
 	computed: {

@@ -41,6 +41,10 @@
 			plus.push.addEventListener('receive', _handlePushReceive);    
 			// APPUpdate();  
 			// #endif
+
+			var info = plus.push.getClientInfo();
+			alert( JSON.stringify( info ) );
+			console.log(info)
 		},
 		onShow: function() {
 			console.log('App Show')
