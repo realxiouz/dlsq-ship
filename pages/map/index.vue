@@ -173,7 +173,7 @@ const TABS = [
 	},
 ]
 export default {
-	onLoad() {
+	onLoad(opt) {
 		this.getShippingData()
 		// #ifdef APP-PLUS
 		this.subNVue = uni.getSubNVueById('popup')
@@ -182,6 +182,13 @@ export default {
 			this.subNVue.hide()
 		})
 		// #endif
+		if (opt.tab) {
+			this.curTab = opt.tab
+		}
+		if (opt.subTab) {
+			this.curSubTab = opt.curSubTab
+		}
+		this.getOrderList(true)
 	},
 	data() {
 		return {

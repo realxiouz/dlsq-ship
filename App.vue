@@ -23,12 +23,13 @@
 			})
 
 			// #ifdef APP-PLUS  
-			const _handlePushClick = message => {  
+			const _handlePushClick = message => {
+					this.$go(`/pages/map/index?tab=2&subTab=1`, 'switch')
 					// 自行处理消息点击事件  
 					let {payload} = message;  
 					console.log( message );
 					this.$showModal({
-						content: message
+						content: payload
 					}) 
 			};  
 			const _handlePushReceive = message => {  
@@ -41,10 +42,6 @@
 			plus.push.addEventListener('receive', _handlePushReceive);    
 			// APPUpdate();  
 			// #endif
-
-			var info = plus.push.getClientInfo();
-			alert( JSON.stringify( info ) );
-			console.log(info)
 		},
 		onShow: function() {
 			console.log('App Show')

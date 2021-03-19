@@ -4,6 +4,7 @@
       <div class="flex flex-direction align-center" style="padding-top:30rpx;">
         <div style="width:180rpx;height:180rpx;background:rgba(255,255,255,.4);border-radius:50%;" class="pos-r">
           <img
+			@click="onPush"
             class="pos-a"
             style="width:132rpx;height:132rpx;border-radius:50%;top:50%;left:50%;margin-left:-66rpx;margin-top:-66rpx;"
             :src="info.avatar"
@@ -151,6 +152,14 @@ export default {
 					this.isLoading = false
 					uni.hideLoading()
 				})
+	},
+	onPush() {
+		this.$get(`/order/pushToSingleByCid`)
+			.then(r => {
+				
+			}).catch(e => {
+				
+			})
 	}
   },
 	onReachBottom() {

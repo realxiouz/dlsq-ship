@@ -9,7 +9,7 @@
 			</view>
 			<div></div>
 			<div class="btn" :class="{ok}" @click="submit">登 录</div>
-			<div class="btn" :class="{ok}" @click="onClient">获取clientid</div>
+			<!-- <div class="btn" :class="{ok}" @click="onClient">获取clientid</div> -->
 			<div class="flex align-center" style="color:#282828;font-size:10px;" @click="toggleCheck">
 				<div :class="checked?'color-primary icon-check':'icon-uncheck color-gray'" style="font-size:24rpx;margin-right:12rpx"></div>
 				<div>下次自动登录</div>
@@ -41,13 +41,22 @@ export default {
 			if (!this.ok) {
 				return;
 			}
+			// #ifdef APP-PLUS
 			let info = plus.push.getClientInfo();
 			let clientid = info?.clientid;
-			console.log(clientid)
+			if (!clientid) {
+				this.$showModal({
+					content: `获取clientid异常,联系开发人员`,
+				})
+				return
+			}
+			// #endif
 			this.$post('/user/accountLogin', {
 					account: this.form.account,
 					password: this.form.password,
+					// #ifdef APP-PLUS
 					clientid,
+					// #endif
 				})
 				.then(res => {
 					uni.setStorageSync('userInfo', res.data.userinfo);
