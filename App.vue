@@ -24,19 +24,13 @@
 
 			// #ifdef APP-PLUS  
 			const _handlePushClick = message => {
-					this.$go(`/pages/map/index?tab=2&subTab=1`, 'switch')
-					// 自行处理消息点击事件  
-					let {payload} = message;  
-					console.log( message );
-					this.$showModal({
-						content: payload
-					}) 
+					this.$store.commit('user/setTab', 2)
+					this.$go(`/pages/map/index`, 'switch')
 			};  
 			const _handlePushReceive = message => {  
-					// 消息接收事件，手动创造本地通知信息  
-					plus.push.createMessage(message.content, message.payload, {  
-							title: message.title  
-					})  
+					plus.push.createMessage(
+						'您有新的订单...'
+					)  
 			};  
 			plus.push.addEventListener('click', _handlePushClick);    
 			plus.push.addEventListener('receive', _handlePushReceive);    

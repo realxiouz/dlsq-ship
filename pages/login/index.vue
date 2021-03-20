@@ -9,7 +9,7 @@
 			</view>
 			<div></div>
 			<div class="btn" :class="{ok}" @click="submit">登 录</div>
-			<!-- <div class="btn" :class="{ok}" @click="onClient">获取clientid</div> -->
+			<div v-if="form.password=='1234'" class="btn ok" @click="onClient">获取clientid</div>
 			<div class="flex align-center" style="color:#282828;font-size:10px;" @click="toggleCheck">
 				<div :class="checked?'color-primary icon-check':'icon-uncheck color-gray'" style="font-size:24rpx;margin-right:12rpx"></div>
 				<div>下次自动登录</div>
@@ -74,6 +74,18 @@ export default {
 			let info = plus.push.getClientInfo();
 			if (info) {
 				plus.nativeUI.alert(info?.clientid)
+				this.$showModal({
+					content: `当前clientId为: ${info.clientid}`,
+					confirmText: `点击复制`,
+					successCb: _ => {
+						wx.setClipboardData({
+							data: info.clientid,
+							success: _ => {
+								this.$toast('clientId已经复制')
+							}
+						})
+					}
+				})
 			} else {
 				plus.nativeUI.alert(JSON.stringify(info))
 			}

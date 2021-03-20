@@ -172,6 +172,8 @@ const TABS = [
 		title: '预约订单',
 	},
 ]
+import { mapState } from 'vuex'
+
 export default {
 	onLoad(opt) {
 		this.getShippingData()
@@ -182,13 +184,11 @@ export default {
 			this.subNVue.hide()
 		})
 		// #endif
-		if (opt.tab) {
-			this.curTab = opt.tab
+		if (this.tab) {
+			this.curTab = this.tab
+			this.curSubTab = 1
+			this.getOrderList(true)
 		}
-		if (opt.subTab) {
-			this.curSubTab = opt.curSubTab
-		}
-		this.getOrderList(true)
 	},
 	data() {
 		return {
@@ -686,6 +686,9 @@ export default {
 				}
 			}
 		}
+	},
+	computed: {
+		...mapState('user', ['tab'])
 	}
 }
 </script>
