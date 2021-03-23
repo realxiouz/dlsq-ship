@@ -73,7 +73,6 @@ export default {
 		onClient() {
 			let info = plus.push.getClientInfo();
 			if (info) {
-				plus.nativeUI.alert(info?.clientid)
 				this.$showModal({
 					content: `当前clientId为: ${info.clientid}`,
 					confirmText: `点击复制`,

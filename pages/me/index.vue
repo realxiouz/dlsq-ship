@@ -131,7 +131,7 @@ export default {
 			}
 			let d = {
 				page: this.page,
-				// type: 'noget',
+				type: 'finish',
 				store_id: 1,
 				order_type: 'delivery'
 			}
